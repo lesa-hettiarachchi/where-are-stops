@@ -11,7 +11,7 @@ Live app: <https://lesa-hettiarachchi.shinyapps.io/where-are-the-stops/>
 A public-facing Shiny dashboard comparing public transport stop availability across the 35 Greater Melbourne Local Government Areas, built around the three task abstractions planned in Task 1A:
 
 |   | Task abstraction | Indicator type | Visual idiom |
-|------------------|------------------|------------------|------------------|
+|----|----|----|----|
 | TA1 | Summarise stop count by transport mode per LGA | Raw (distinct stop counts) | Small-multiple horizontal bar charts |
 | TA2 | Compare stop density per LGA | Processed (stops per km2) | Leaflet choropleth |
 | TA3 | Rank LGAs on a 0-100 under-served index | Normalised (residents per stop, min-max scaled) | Scatter plot plus ranking table |

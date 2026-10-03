@@ -21,7 +21,7 @@ library(tidyverse)
 Task 2A turns the cleaned tables produced in Task 1B (`clean/` folder) into the three analysis-ready tables needed by the three task abstractions planned in Task 1A. Every table written to `processed/` is read directly by the Shiny app (`app.R`), so this document is the evidence that each planned visualization has its data prepared before it is implemented.
 
 | Task abstraction | Indicator type | Output table |
-|------------------------|------------------------|------------------------|
+|----|----|----|
 | TA1 – Summarise stop count by transport mode per LGA | Raw (distinct counts) | `processed/ta1_stop_counts.csv` |
 | TA2 – Compare stop density (stops per km²) per LGA | Processed (rate) | `processed/ta2_stop_density.csv` + `processed/lga_boundaries.geojson` |
 | TA3 – Rank LGAs on a 0–100 under-served index (residents per stop) | Normalised / indexed | `processed/ta3_underserved_index.csv` |
@@ -161,9 +161,9 @@ ta2 %>%
 write_csv(ta2, "processed/ta2_stop_density.csv")
 ```
 
-## Boundary geometry for the choropleth 
+## Boundary geometry for the choropleth
 
-The cleaned GeoJSON is 5 MB, which is slow to send to a browser. The polygons are simplified to a 100 m tolerance in a projected CRS (GDA2020 / MGA zone 55) and transformed back to WGS84 for Leaflet. Only geometry is stored here – the app joins the TA2 table onto it by `lga_code21` at run time, so the density values shown on the map are exactly those in `ta2_stop_density.csv`. \
+The cleaned GeoJSON is 5 MB, which is slow to send to a browser. The polygons are simplified to a 100 m tolerance in a projected CRS (GDA2020 / MGA zone 55) and transformed back to WGS84 for Leaflet. Only geometry is stored here – the app joins the TA2 table onto it by `lga_code21` at run time, so the density values shown on the map are exactly those in `ta2_stop_density.csv`.\
 (Used help of AI to to this performance increase.)
 
 ```{r}
@@ -185,7 +185,7 @@ st_write(lga_boundaries, "processed/lga_boundaries.geojson",
          delete_dsn = TRUE, quiet = TRUE)
 ```
 
-# TA3 – Under-served index 0–100 
+# TA3 – Under-served index 0–100
 
 **Action–target:** *Rank* LGAs on a 0–100 index of residents per stop.
 

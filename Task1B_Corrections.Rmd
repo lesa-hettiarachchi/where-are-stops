@@ -230,7 +230,7 @@ tibble(
 )
 ```
 
-The Tukey upper fence is 7.5; Darebin is 100, over twelve times the next highest value. Its ratio of higher-education to school-level facilities is 1.35, while every other LGA sits below 0.10 — Darebin would need more universities and TAFE campuses than schools.
+The Tukey upper fence is 7.5; Darebin is 100, over twelve times the next highest value. Its ratio of higher-education to school-level facilities is 1.35, while every other LGA sits below 0.10, Darebin would need more universities and TAFE campuses than schools.
 
 ## Why it matters
 
