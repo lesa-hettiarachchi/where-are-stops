@@ -1,7 +1,3 @@
----
----
----
-
 # Where Are the Stops?
 
 Public transport stop availability across Greater Melbourne LGAs.
