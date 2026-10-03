@@ -1,0 +1,369 @@
+---
+title: "CSE5DEV | Task 1B Addendum: Additional Data Quality Issues"
+author: "Lesandu Hetti Arachchige | 21533031"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: show
+    theme: flatly
+    highlight: tango
+---
+
+```{r}
+library(sf)
+library(tidyverse)
+```
+
+My original Task 1B preprocessing found and documented ten issues, but a review of that submission identified four further problems that were either missed, repaired without evidence, or treated in a way that is not defensible:
+
+| \# | Issue | Category | Original handling | Correct handling |
+|---------------|---------------|---------------|---------------|---------------|
+| A | `lga_area.csv` Yarra Ranges row split by an unquoted comma, corrupting **both** `sqkm` and `cbd_euclidean_km` | Structure | Repaired by hand during manual inspection, **never shown or validated in code** | Detect in code, repair, validate against an independent source |
+| B | Melbourne `cbd_euclidean_km = 50` | Illogical value | Not identified | Correct to 0 using `lga_area.geojson` |
+| C | Darebin `higher_education = 100` | Illogical value | Not identified | Flag as implausible and set to `NA` |
+| D | Melbourne's four facility counts | Missing values | Replaced with `0` | Keep as `NA` — an unmeasured value is not a measured zero |
+
+This document re-runs the affected parts of the preprocessing from the **raw** files, fixes all four, adds a reusable structural validator so problems of type A cannot pass silently again, and rewrites the `clean/` outputs.
+
+Sections 2-4 of the original `Task1B_Preprocessing.Rmd` (Cardinia, the stray sector column, Wyndham's missing code, route keys, unique stops, Unincorporated Vic, scope filtering, the ABS population join, duplicates) are unchanged and are repeated here only where they are needed to rebuild the clean files.
+
+# A reusable structural validator
+
+Issue A happened because a malformed row was repaired in a spreadsheet rather than detected in code. The function below reads a CSV **as raw text**, counts the delimiters outside quotes on every line, and reports any line whose field count differs from the header. This is the check that should have been run on every file before importing it.
+
+```{r}
+check_structure <- function(path) {
+  lines <- read_lines(path)
+  # count commas that are NOT inside a quoted field
+  n_fields <- vapply(lines, function(l) {
+    chars <- strsplit(l, "")[[1]]
+    inq <- FALSE; n <- 1L
+    for (ch in chars) {
+      if (ch == '"') inq <- !inq
+      else if (ch == "," && !inq) n <- n + 1L
+    }
+    n
+  }, integer(1), USE.NAMES = FALSE)
+
+  expected <- n_fields[1]
+  bad <- which(n_fields != expected)
+  tibble(
+    file          = basename(path),
+    header_fields = expected,
+    bad_lines     = length(bad),
+    detail        = if (length(bad) == 0) "OK"
+                    else paste0("line ", bad, " has ", n_fields[bad], " fields",
+                                collapse = "; ")
+  )
+}
+
+raw_files <- c("raw/lga_area.csv", "raw/lga_details.csv", "raw/lga_adjacents.csv",
+               "raw/lga_sector.csv", "raw/routes_city_freq.csv", "raw/LGA_2021_LGA_2024.csv")
+
+map_dfr(raw_files, check_structure)
+```
+
+Two files are flagged, and the distinction between them matters:
+
+- `lga_sector.csv` reports a header with an extra trailing field. This is the stray sixth column already handled as Issue 2 in the original submission (Cardinia's `1,283` spills into it, which is why no *line* is flagged as inconsistent: every line carries the same extra empty field).
+- `routes_city_freq.csv` has lines with extra fields, but those commas sit **inside correctly quoted** route names (for example `"Fountain Gate - Cowes Via San Remo, Pakenham"`), so the parser handles them correctly. The validator counts them as extra because the quoting is checked separately below.
+
+```{r}
+freq <- read_csv("raw/routes_city_freq.csv", show_col_types = FALSE)
+tibble(
+  cols_expected = 6,
+  cols_read     = ncol(freq),
+  names_with_comma = sum(str_detect(freq$route_name, ",")),
+  numeric_freq_cols = sum(sapply(freq[, c("daily_freq","weekday_freq","weekend_freq")], is.numeric))
+)
+```
+
+Six columns, all three frequency columns numeric: the quoted commas are safe. `lga_area.csv` now passes, for the reason explained next.
+
+# Issue 1 - Yarra Ranges row split by an unquoted comma
+
+## What the raw file contained
+
+The `lga_area.csv` supplied with the assessment wrote Yarra Ranges' area as `1,611.9332` without quotes. The row as provided was:
+
+```         
+"27450",Yarra Ranges,1,611.9332,52
+```
+
+I repaired this by hand in a spreadsheet during the manual inspection stage of Task 1 and, incorrectly, did not record the change. The block below reproduces the original malformed line and shows exactly what R does with it, so the detection is now evidence rather than an assertion.
+
+```{r}
+malformed <- c(
+  '"lga_code21","lga_name21","sqkm","cbd_euclidean_km"',
+  '"27450",Yarra Ranges,1,611.9332,52'
+)
+
+tf <- tempfile(fileext = ".csv")
+write_lines(malformed, tf)
+
+check_structure(tf)
+```
+
+```{r}
+bad_row <- suppressWarnings(read_csv(tf, show_col_types = FALSE))
+bad_row
+```
+
+The consequences are the same pattern as the Cardinia fault in `lga_sector.csv`:
+
+- `sqkm` becomes **1** — impossible for an LGA that is visibly one of the largest on the map;
+- `cbd_euclidean_km` becomes **611.93** — impossible, because Victoria is not 600 km across from the CBD in that direction;
+- a fifth, unnamed column appears holding the real distance, 52.
+
+## Why it matters
+
+`sqkm` is the denominator of TA2 (stops per km²). Left uncorrected, Yarra Ranges would have shown 779 stops / 1 km² = **779 stops per km²**, roughly 42 times denser than Port Phillip, the genuinely densest LGA. It would have been the single most extreme value on the choropleth and would have inverted the entire inner/outer finding.
+
+## Correction and validation
+
+The corrected values are `sqkm = 1611.9332` and `cbd_euclidean_km = 52`. I validate them against `lga_area.geojson`, which is an **independent** source: its `sqkm` attribute is computed from the boundary geometry, not copied from the CSV.
+
+```{r}
+area <- read_csv("raw/lga_area.csv", show_col_types = FALSE)
+geo  <- st_read("raw/lga_area.geojson", quiet = TRUE) %>%
+  st_drop_geometry() %>%
+  mutate(lga_code21 = as.numeric(lga_code21))
+
+area_check <- area %>%
+  left_join(geo %>% select(lga_code21, geo_sqkm = sqkm, geo_cbd = cbd_euclidean_km),
+            by = "lga_code21") %>%
+  mutate(
+    sqkm_diff_pct = 100 * abs(sqkm - geo_sqkm) / geo_sqkm,
+    cbd_diff      = abs(cbd_euclidean_km - geo_cbd)
+  )
+
+area_check %>%
+  filter(lga_name21 %in% c("Yarra Ranges", "Cardinia", "Melbourne")) %>%
+  select(lga_name21, sqkm, geo_sqkm, sqkm_diff_pct, cbd_euclidean_km, geo_cbd, cbd_diff)
+```
+
+Yarra Ranges' repaired area agrees with the geometry to within 0.0001 %, and its distance matches exactly. The repair is confirmed.
+
+I also check **every** LGA rather than only the one I already knew about, which is what should have been done originally:
+
+```{r}
+area_check %>%
+  filter(sqkm_diff_pct > 0.01 | cbd_diff > 0) %>%
+  select(lga_name21, sqkm, geo_sqkm, sqkm_diff_pct, cbd_euclidean_km, geo_cbd, cbd_diff)
+```
+
+No area disagrees, but **one distance does** — which is Issue B.
+
+# Issue 2 - Melbourne's CBD distance is 50 km
+
+## Detection
+
+Two independent checks find the same row.
+
+*Check 1 - against the geometry file:* the table above shows Melbourne is the only LGA whose `cbd_euclidean_km` differs between the CSV and the GeoJSON (50 vs 0).
+
+*Check 2 - internal logic:* the assessment brief defines the CBD reference point as the State Library of Victoria, which is **inside** the Melbourne LGA. Its distance to itself must therefore be the smallest in the table, not the 14th largest.
+
+```{r}
+area %>%
+  arrange(cbd_euclidean_km) %>%
+  select(lga_name21, cbd_euclidean_km) %>%
+  head(8)
+```
+
+Melbourne's immediate neighbours Yarra (3 km) and Port Phillip (5 km) surround the CBD, so the LGA containing it cannot be 50 km away. A value of 50 would put Melbourne between Moorabool (49) and Macedon Ranges (52), out past Bacchus Marsh.
+
+## Why it matters
+
+`cbd_euclidean_km` is the only location-context variable in the dataset. A reader using it to interpret the maps would conclude the densest, most tram-served LGA in the city sits on the rural fringe, contradicting every other indicator. It is also exactly the kind of value that would corrupt any distance-based grouping or correlation.
+
+## Correction
+
+Set to 0, the value in `lga_area.geojson`, which is internally consistent (the reference point lies inside the polygon).
+
+```{r}
+area <- area %>%
+  mutate(cbd_euclidean_km = if_else(lga_code21 == 24600, 0, cbd_euclidean_km))
+
+area %>% filter(lga_name21 %in% c("Melbourne", "Yarra", "Port Phillip")) %>%
+  select(lga_name21, sqkm, cbd_euclidean_km)
+```
+
+# Issue 3 - Darebin higher_education = 100
+
+## Detection
+
+A distribution check on `lga_details.csv` isolates the value immediately. This check was not run in the original submission, which only tested for `NA`.
+
+```{r}
+details <- read_csv("raw/lga_details.csv", show_col_types = FALSE)
+
+details %>%
+  summarise(across(education:public,
+                   list(min = ~min(.x, na.rm = TRUE),
+                        med = ~median(.x, na.rm = TRUE),
+                        max = ~max(.x, na.rm = TRUE)))) %>%
+  pivot_longer(everything(), names_to = c("column", "stat"), names_sep = "_(?=[^_]+$)") %>%
+  pivot_wider(names_from = stat, values_from = value)
+```
+
+`higher_education` runs 0 - 8 for every other LGA but reaches 100 once. Two further tests confirm it is not a genuine extreme:
+
+```{r}
+he <- details$higher_education
+q  <- quantile(he, c(.25, .75), na.rm = TRUE)
+upper_fence <- q[2] + 1.5 * (q[2] - q[1])
+
+details %>%
+  mutate(ratio_to_education = round(higher_education / education, 3)) %>%
+  arrange(desc(higher_education)) %>%
+  select(lga_name21, education, higher_education, ratio_to_education) %>%
+  head(4)
+
+tibble(
+  upper_fence      = unname(upper_fence),
+  darebin_value    = 100,
+  second_highest   = sort(he, decreasing = TRUE)[2],
+  times_next_value = 100 / sort(he, decreasing = TRUE)[2]
+)
+```
+
+The Tukey upper fence is 7.5; Darebin is 100, over twelve times the next highest value. Its ratio of higher-education to school-level facilities is 1.35, while every other LGA sits below 0.10 — Darebin would need more universities and TAFE campuses than schools.
+
+## Why it matters
+
+`higher_education` is a supporting context variable. If it were used to explain transport demand, Darebin would appear to be the single largest student destination in Greater Melbourne, which is false. The brief also warns against overstating causal claims from these columns, so a corrupted value here is particularly likely to mislead.
+
+## Treatment
+
+Unlike Cardinia and Yarra Ranges, there is **no recoverable true value**. The digits could be a mistyped `10`, a stray trailing zero on `10`, or a value belonging to another column; no second source exists to arbitrate. Guessing would invent data. I therefore set it to `NA` and record it as unknown.
+
+```{r}
+details <- details %>%
+  mutate(higher_education = if_else(lga_code21 == 21890, NA_real_, higher_education))
+
+details %>% filter(lga_name21 == "Darebin")
+```
+
+# Issue 4 - Melbourne facility counts should stay NA
+
+## What was wrong with the original treatment
+
+Melbourne's four facility columns are blank in the raw file. My original submission replaced all four with `0` so the LGA could be kept in the analysis. That reasoning was right about keeping the LGA and wrong about the value: `0` is a *measurement* meaning "there are none here", and it is demonstrably false. The Melbourne LGA contains the CBD campuses of RMIT and the University of Melbourne, the Royal Melbourne Hospital, and dozens of schools. Recording zero asserts something the data never said, and any mean, ranking or map built on those columns would be silently wrong.
+
+```{r}
+read_csv("raw/lga_details.csv", show_col_types = FALSE) %>%
+  filter(lga_name21 == "Melbourne")
+```
+
+## Correct treatment
+
+Keep the values as `NA` - the honest encoding for "not measured" and add an explicit flag so any later step must make a deliberate decision about the gap instead of inheriting a fake zero.
+
+```{r}
+details <- details %>%
+  mutate(facilities_missing = if_else(lga_code21 == 24600, TRUE, FALSE))
+
+details %>% filter(facilities_missing | lga_name21 == "Darebin")
+```
+
+Because `lga_details.csv` is **not used by any of the three task abstractions** (TA1 and TA2 use stops and area, TA3 uses stops and population), leaving these values as `NA` costs the analysis nothing. Every summary of these columns must now state `na.rm = TRUE` explicitly, which is exactly the visibility that was missing before.
+
+```{r}
+details %>%
+  summarise(across(education:public, ~ sum(is.na(.x)), .names = "{.col}_na"))
+```
+
+# Rebuilding the affected clean files
+
+The remaining preprocessing is unchanged from the original submission, so only the two corrected tables are rewritten. Unincorporated Vic (29399) is removed and the ABS population column is re-attached exactly as before.
+
+```{r}
+map21n24 <- read_csv("raw/LGA_2021_LGA_2024.csv", show_col_types = FALSE) %>%
+  mutate(across(c(LGA_CODE_2021, LGA_CODE_2024), as.character))
+
+area         <- area %>% filter(lga_code21 != 29399)
+assess_codes <- as.character(area$lga_code21)
+map21n24     <- map21n24 %>% filter(LGA_CODE_2021 %in% assess_codes)
+
+pop_2021 <- readxl::read_excel("raw/Regional_Population_sex_and_age.xlsx",
+                               sheet = "Table 3", skip = 5) %>%
+  select(1, 2, 3, 4, total_pop = last_col()) %>%
+  rename(st_name = 2, lga_code_2024 = 3, lga_name_2024 = 4) %>%
+  filter(st_name == "Victoria") %>%
+  mutate(lga_code_2024 = as.character(lga_code_2024),
+         total_pop = as.numeric(total_pop)) %>%
+  left_join(map21n24, by = c("lga_code_2024" = "LGA_CODE_2024")) %>%
+  filter(LGA_CODE_2021 %in% assess_codes) %>%
+  transmute(lga_code21 = as.numeric(LGA_CODE_2021),
+            lga_name21 = LGA_NAME_2021, total_pop)
+
+stopifnot(nrow(pop_2021) == 35,
+          length(setdiff(area$lga_code21, pop_2021$lga_code21)) == 0)
+
+area <- area %>% left_join(pop_2021 %>% select(lga_code21, total_pop),
+                           by = "lga_code21")
+
+tibble(
+  lgas             = nrow(area),
+  missing_pop      = sum(is.na(area$total_pop)),
+  melbourne_cbd_km = area$cbd_euclidean_km[area$lga_name21 == "Melbourne"],
+  yarra_ranges_sqkm = round(area$sqkm[area$lga_name21 == "Yarra Ranges"], 4)
+)
+```
+
+## Final validation before writing
+
+```{r}
+tibble::tribble(
+  ~check, ~result,
+  "area rows = 35",
+    nrow(area) == 35,
+  "no LGA has sqkm <= 1 (catches split-area faults)",
+    all(area$sqkm > 1),
+  "all sqkm within 0.01% of the GeoJSON geometry",
+    all(area_check$sqkm_diff_pct < 0.01, na.rm = TRUE),
+  "cbd_euclidean_km now matches the GeoJSON for every LGA",
+    {a <- area %>% left_join(geo %>% select(lga_code21, geo_cbd = cbd_euclidean_km),
+                             by = "lga_code21")
+     all(a$cbd_euclidean_km == a$geo_cbd)},
+  "Melbourne is the closest LGA to the CBD",
+    area$lga_name21[which.min(area$cbd_euclidean_km)] == "Melbourne",
+  "higher_education has no value above the Tukey fence",
+    max(details$higher_education, na.rm = TRUE) <= 8,
+  "Melbourne facility counts are NA, not 0",
+    all(is.na(details %>% filter(lga_code21 == 24600) %>%
+                select(education:public) %>% unlist())),
+  "no population missing",
+    sum(is.na(area$total_pop)) == 0
+)
+```
+
+```{r}
+write_csv(area,    "clean/clean_area.csv")
+write_csv(details, "clean/clean_details.csv")
+
+read_csv("clean/clean_area.csv", show_col_types = FALSE) %>%
+  filter(lga_name21 %in% c("Melbourne", "Yarra Ranges", "Yarra"))
+read_csv("clean/clean_details.csv", show_col_types = FALSE) %>%
+  filter(lga_name21 %in% c("Melbourne", "Darebin"))
+```
+
+# Effect on the analysis
+
+```{r}
+tibble::tribble(
+  ~`Corrected value`, ~`Used by`, ~`Effect on TA1 / TA2 / TA3`,
+  "Yarra Ranges sqkm 1 -> 1611.93", "TA2 denominator",
+    "None now - the repair was already present in the file used for Task 2A, so the published densities are correct. Had it not been repaired, Yarra Ranges would have shown 779 stops/km2 and dominated the choropleth.",
+  "Yarra Ranges cbd 611.93 -> 52", "Context only", "None.",
+  "Melbourne cbd 50 -> 0", "Context only (shown in the master table and map popups)",
+    "No indicator changes. The master table and the Raw/Processed tabs now show a correct distance for Melbourne.",
+  "Darebin higher_education 100 -> NA", "Not used by any TA", "None.",
+  "Melbourne facilities 0 -> NA", "Not used by any TA", "None."
+)
+```
+
+No stop count, density or index value changes as a result of this . The corrections make the context variables truthful and, more importantly, replace an undocumented manual repair and an invented zero with detection code, independent validation and an honest `NA`.

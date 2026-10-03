@@ -1,0 +1,454 @@
+"vehicle","route_number","route_name","daily_freq","weekday_freq","weekend_freq"
+Bus,"",Adelaide - Melbourne Via Bendigo & Nhill,1,0,1
+Bus,"",Ballarat - Melbourne Via Melton,1,1,0
+Bus,"",City - Melbourne Airport,2,2,2
+Bus,"",Cowes or Inverloch - Melbourne Via Dandenong & Koo Wee Rup,3,3,3
+Bus,"","Fountain Gate - Cowes Via San Remo, Pakenham",13,13,0
+Bus,"",Frankston - Melbourne Airport,2,2,2
+Bus,"",Garfield Station Via Garfield Station,3,3,0
+Bus,"",Kyneton Town Centre - Lancefield Via Kyneton Town Centre,1,1,1
+Bus,"",Lancefield - Gisborne Town Centre Via Lancefield,9,9,9
+Bus,"",Lancefield - Sunbury Via Lancefield,6,5,6
+Bus,"",Melbourne - Albury Via Seymour,1,1,1
+Bus,"",Melbourne - Bairnsdale Via Sale & Traralgon,2,2,3
+Bus,"",Melbourne - Barham Via Heathcote,2,3,2
+Bus,"",Melbourne - Barmah Via Shepparton & Heathcote,2,2,2
+Bus,"",Melbourne City - Avalon Airport,1,1,1
+Bus,"",Melbourne - Deniliquin Via Echuca & Heathcote,2,2,2
+Bus,"",Melbourne - Mansfield Via Yea,1,1,1
+Bus,"",Melbourne - Seymour Via Broadmeadows,3,2,3
+Bus,"",Melbourne Via Melton,1,1,0
+Bus,"",Nar Nar Goon Station Via Nar Nar Goon Station,3,3,0
+Bus,"",Pakenham - Koo Wee Rup Via Pakenham,3,3,3
+Bus,"",Pakenham Station Via Pakenham Station,5,5,0
+Bus,"",Shepparton - Melbourne Via Seymour,1,2,1
+Bus,"","Traralgon - Melbourne Via Pakenham, Moe & Morwell",3,3,3
+Bus,"",Traralgon Plaza Via Traralgon Plaza,2,2,0
+Bus,"",Yarram - Melbourne Via Koo Wee Rup & Leongatha,2,2,2
+Bus,"150",Tarneit Station - Williams Landing Station,19,19,16
+Bus,"151",Tarneit Station - Williams Landing Station,19,19,19
+Bus,"152",Williams Landing Station - Tarneit Station,20,20,19
+Bus,"153",Werribee Station - Williams Landing Station,19,19,19
+Bus,"160",Hoppers Crossing Station - Tarneit Station,15,15,15
+Bus,"161",Werribee Station - Hoppers Crossing Station,44,44,45
+Bus,"166",Wyndham Vale Station - Hoppers Crossing Station,25,25,25
+Bus,"167",Hoppers Crossing Station - Tarneit Station,32,32,33
+Bus,"170",Werribee Station - Tarneit Station,16,16,16
+Bus,"180",Werribee Station - Tarneit Station,21,22,20
+Bus,"181",Werribee Station - Hoppers Crossing Station,30,30,31
+Bus,"182",Werribee Railway Station - Tarneit Station,27,27,28
+Bus,"190",Wyndham Vale Station - Werribee Station,13,14,13
+Bus,"191",Manor Lakes - Werribee Station,29,29,29
+Bus,"192",Wyndham Vale Station - Werribee Station,19,19,19
+Bus,"200",Bulleen - City (Queen St),44,44,41
+Bus,"201",Box Hill Station - Deakin University,3,3,0
+Bus,"202",Yarra Bend - Melbourne University,7,7,0
+Bus,"207",Doncaster SC - City (Queen St),48,49,46
+Bus,"215",Caroline Springs - Highpoint SC,33,33,32
+Bus,"216",Sunshine Station - City (Queen St),37,38,36
+Bus,"220",Sunshine Station - Sunshine Station,41,42,40
+Bus,"223",Yarraville - Highpoint SC,22,22,21
+Bus,"232",Altona North - City (Queen Victoria Market),12,12,11
+Bus,"234",Garden City - City (Queen Victoria Market),20,20,20
+Bus,"235",Fishermans Bend - City (Queen Victoria Market),15,15,13
+Bus,"236",Garden City - City (Queen Victoria Market),21,21,21
+Bus,"237",Fishermans Bend - City (Queen Victoria Market),12,12,0
+Bus,"246",Elsternwick - Clifton Hill,39,40,37
+Bus,"250",La Trobe University - City (Queen St),49,49,47
+Bus,"251",Northland SC - City (Queen St),43,43,42
+Bus,"270",Mitcham - Box Hill,26,27,25
+Bus,"271",Ringwood - Box Hill,46,46,46
+Bus,"273",The Pines SC - Nunawading Station,22,22,21
+Bus,"279",Doncaster SC/Templestowe - Box Hill,24,24,22
+Bus,"280",The Pines SC,57,56,59
+Bus,"281",Deakin University - Templestowe,22,22,23
+Bus,"282",The Pines SC,63,62,64
+Bus,"284",Doncaster Park & Ride - Box Hill,14,14,14
+Bus,"285",Camberwell SC - Doncaster Park & Ride,33,33,31
+Bus,"293",Greensborough - Box Hill,32,32,30
+Bus,"295",The Pines SC - Doncaster SC,20,20,20
+Bus,"302",Box Hill Station - City (Lonsdale St),38,38,37
+Bus,"303",Ringwood North - City (Queen St),38,38,0
+Bus,"304",Doncaster SC - City (Lonsdale St),37,38,36
+Bus,"305",The Pines - City (King/Lonsdale Sts),21,23,16
+Bus,"309",Donvale - City (Queen St),35,35,0
+Bus,"318",Deep Creek - City (King/Lonsdale Sts),36,36,0
+Bus,"343",Hurstbridge - Greensborough,20,20,0
+Bus,"350",La Trobe University - City (Queen St),38,38,0
+Bus,"356",Wollert East - Epping Station,10,10,10
+Bus,"357",Wollert West - Thomastown Station,28,28,27
+Bus,"358",Wollert - Epping Station,16,16,17
+Bus,"364",Warrandyte - Ringwood Station,30,30,28
+Bus,"370",Ringwood - Mitcham,18,18,18
+Bus,"381",Diamond Creek Station - Mernda Station,27,27,28
+Bus,"382",Whittlesea - Northland SC,45,45,47
+Bus,"383",Palisades - University Hill,31,31,32
+Bus,"384",Kinglake - Whittlesea,9,9,8
+Bus,"385",Mernda Station/Whittlesea - Greensborough,32,32,29
+Bus,"386",Mernda Station - Bundoora RMIT,35,35,34
+Bus,"387",Mernda Station - Bundoora RMIT,33,33,34
+Bus,"388",Mernda Station,20,20,19
+Bus,"389",Mernda Station,21,21,0
+Bus,"390",Mernda Station - Craigieburn Station,18,18,18
+Bus,"400",Laverton Station - Sunshine Station,32,32,32
+Bus,"401",North Melbourne Station - University of Melbourne,4,4,0
+Bus,"402",Footscray - East Melbourne,22,22,21
+Bus,"403",Footscray Station - Melbourne University,3,3,0
+Bus,"404",Footscray Station - Moonee Ponds,13,13,13
+Bus,"406",Keilor East - Footscray,30,29,30
+Bus,"407",Avondale Heights - Highpoint SC,15,15,15
+Bus,"408",Highpoint SC - St Albans Station,43,43,43
+Bus,"409",Highpoint SC - Yarraville,23,23,22
+Bus,"410",Sunshine Station - Footscray,23,24,23
+Bus,"411",Laverton Station - Footscray,43,43,43
+Bus,"412",Laverton Station - Footscray,47,47,49
+Bus,"414",Laverton Station - Footscray,29,29,28
+Bus,"415",Laverton Station - Williamstown,31,31,30
+Bus,"417",Laverton North - Laverton Station,17,17,0
+Bus,"418",Caroline Springs - St Albans Station,23,23,23
+Bus,"419",Watergardens Station - St Albans Station,26,26,27
+Bus,"420",Watergardens Station - Sunshine Station,25,25,25
+Bus,"421",Watergardens Station - St Albans Station,43,43,42
+Bus,"422",Brimbank Central SC - Sunshine Station,23,23,24
+Bus,"423",Brimbank Central SC - St Albans Station,20,20,20
+Bus,"424",Brimbank Central SC - St Albans Station,14,14,14
+Bus,"425",Watergardens Station - St Albans Station,26,26,26
+Bus,"426",Caroline Springs - Sunshine Station,27,28,27
+Bus,"427",Sunshine West - Sunshine Station,15,15,15
+Bus,"428",Sunshine West - Sunshine Station,13,13,13
+Bus,"429",Sunshine Station,10,10,10
+Bus,"431",Kingsville - Yarraville,11,11,12
+Bus,"432",Yarraville - Newport,36,36,36
+Bus,"433",Maddingley - Darley Via Bacchus Marsh Station,19,21,17
+Bus,"434",Bacchus Marsh Station - Telford Park Via Bacchus Marsh,13,13,13
+Bus,"439",Werribee South - Werribee Station,13,13,13
+Bus,"441",Westleigh Gardens - Werribee Station,9,9,9
+Bus,"443",Werribee Station (anti-clockwise) - Werribee Station (clockwise),15,16,15
+Bus,"444",Aintree - Rockbank,9,9,9
+Bus,"452",Eynesbury - Melton Station Via Eynesbury,13,13,13
+Bus,"453",Melton - Melton Station,19,19,18
+Bus,"454",Cobblebank Station - Melton Station,13,13,13
+Bus,"455",Micasa Rise - Melton Station,19,20,19
+Bus,"456",Sunshine Station - Melton,32,32,33
+Bus,"457",Melton - Melton Station,19,20,19
+Bus,"458",Kurunjang - Melton Station,20,20,20
+Bus,"459",Arnolds Creek - Melton Station,18,18,18
+Bus,"460",Caroline Springs Station - Watergardens Railway Station,19,19,19
+Bus,"461",Caroline Springs - Watergardens Station,19,19,19
+Bus,"462",Caroline Springs - Watergardens,24,23,24
+Bus,"463",Hillside - Watergardens,12,12,12
+Bus,"465",Keilor Park - Essendon Station,16,16,16
+Bus,"467",Aberfeldie - Moonee Ponds Station,9,9,9
+Bus,"468",Highpoint SC - Essendon,11,10,11
+Bus,"469",Keilor East - Moonee Ponds,41,41,41
+Bus,"471",Williamstown - Sunshine Station,40,40,39
+Bus,"472",Moonee Ponds - Williamstown,43,43,43
+Bus,"475",Sunbury Station - Diggers Rest Station,16,16,16
+Bus,"476",Watergardens - Moonee Ponds,36,36,37
+Bus,"477",Broadmeadows Station - Moonee Ponds,41,41,41
+Bus,"478",Melbourne Airport - Airport West SC,9,9,9
+Bus,"479",Sunbury Station - Airport West SC,16,16,17
+Bus,"481",Mount Lion - Sunbury,14,14,14
+Bus,"482",Melbourne Airport - Airport West SC,13,13,0
+Bus,"483",Moonee Ponds - Sunbury,20,21,20
+Bus,"484",Roxburgh Park - Broadmeadows,33,33,33
+Bus,"485",Wilsons Lane - Sunbury,12,12,12
+Bus,"486",Rolling Meadows - Sunbury,12,12,12
+Bus,"487",Killara Heights - Sunbury,11,11,11
+Bus,"488",Jacksons Hill - Sunbury,11,11,11
+Bus,"489",Canterbury Hills - Sunbury,11,11,11
+Bus,"490",Gowanbrae - Airport West,9,9,9
+Bus,"494",Point Cook South - Williams Landing Station,14,14,14
+Bus,"495",Point Cook South - Williams Landing Station,17,17,15
+Bus,"496",Sanctuary Lakes - Laverton Station,22,21,22
+Bus,"497",Saltwater Coast Estate - Williams Landing Station,17,17,17
+Bus,"498",Hoppers Crossing Station - Laverton Station,25,25,26
+Bus,"501",Donnybrook Station - Craigieburn Station,2,2,2
+Bus,"503",Essendon - East Brunswick,22,23,21
+Bus,"504",Clifton Hill - Moonee Ponds,24,24,24
+Bus,"505",Melbourne University - Moonee Ponds,16,16,16
+Bus,"506",Moonee Ponds - Westgarth,22,22,22
+Bus,"508",Alphington - Moonee Ponds,32,32,32
+Bus,"509",Brunswick West - Barkly Square SC,9,9,9
+Bus,"510",Ivanhoe Station - Essendon Station,37,38,34
+Bus,"511",Mandalay - Donnybrook Station,9,9,0
+Bus,"512",East Coburg - Strathmore Station,20,20,21
+Bus,"513",Eltham - Glenroy,60,60,59
+Bus,"514",Eltham - Glenroy,76,76,76
+Bus,"517",St Helena - Northland SC,43,43,43
+Bus,"518",St Helena West - Greensborough,13,13,13
+Bus,"525",Donnybrook Station - Craigieburn Station,32,32,32
+Bus,"526",West Preston - Coburg,12,12,12
+Bus,"527",Gowrie - Northland SC,40,40,39
+Bus,"528",Craigieburn Central SC - Craigieburn Station,22,22,22
+Bus,"529",Craigieburn North - Craigieburn Station,17,17,17
+Bus,"530",Coburg - Campbellfield,26,27,26
+Bus,"531",North Coburg - Upfield Station,17,17,0
+Bus,"532",Broadmeadows - Craigieburn,19,19,19
+Bus,"533",Craigieburn North - Craigieburn,10,10,10
+Bus,"534",Coburg - Glenroy,22,22,22
+Bus,"536",Gowrie - Glenroy,15,15,15
+Bus,"537",Craigieburn West - Craigieburn Station,10,10,10
+Bus,"538",Broadmeadows - Somerset Estate,15,15,15
+Bus,"540",Upfield - Broadmeadows,16,16,16
+Bus,"541",Craigieburn North (Mt Ridley Rd) - Broadmeadows Station,39,39,39
+Bus,"542",Roxburgh Park - Pascoe Vale,34,34,30
+Bus,"543",Greenvale Gardens - Roxburgh Park,16,16,16
+Bus,"544",Roxburgh Park - Craigieburn,14,14,14
+Bus,"546",Melbourne University - Heidelberg,29,29,29
+Bus,"548",Kew - La Trobe University,32,32,36
+Bus,"549",Ivanhoe - Northland SC,13,13,13
+Bus,"550",Northland SC - La Trobe University,11,11,11
+Bus,"551",Heidelberg - La Trobe University,13,13,0
+Bus,"552",North East Reservoir - Northcote Plaza,40,40,41
+Bus,"553",West Preston - Preston,26,26,26
+Bus,"554",Lalor Loop,21,21,23
+Bus,"555",Northland SC - Epping Plaza SC,30,30,29
+Bus,"556",Epping Plaza SC - Northland SC,43,44,42
+Bus,"557",Thomastown,21,21,23
+Bus,"558",Reservoir - Reservoir,24,24,25
+Bus,"559",Thomastown Station,19,19,18
+Bus,"561",Macleod - Pascoe Vale,42,43,39
+Bus,"564",South Morang Station - Bundoora RMIT,21,21,21
+Bus,"566",Lalor - Northland SC,63,63,61
+Bus,"567",Northcote - Regent,33,33,33
+Bus,"569",Epping Plaza SC - South Morang Station,19,19,21
+Bus,"570",Thomastown - Bundoora RMIT,14,14,14
+Bus,"577",Epping Plaza SC - South Morang Station,14,14,13
+Bus,"578",Eltham Station - Warrandyte,19,19,19
+Bus,"579",Eltham - Warrandyte,20,20,20
+Bus,"580",Eltham Station - Diamond Creek,14,14,14
+Bus,"582",Eltham Station,12,12,12
+Bus,"600",Southland SC - St Kilda Station,37,35,41
+Bus,"601",Huntingdale Station - Monash University (Clayton),2,2,0
+Bus,"603",Brighton Beach Station - Alfred Hospital,32,33,31
+Bus,"604",Gardenvale - Alfred Hospital,26,26,25
+Bus,"605",Gardenvale - City,40,40,40
+Bus,"606",Fishermans Bend - Elsternwick Station,36,36,35
+Bus,"609",Kew/Hawthorn - Fairfield,14,14,0
+Bus,"612",Box Hill - Chadstone SC,51,50,53
+Bus,"623",Glen Waverley - St. Kilda,51,51,50
+Bus,"624",Oakleigh - Kew,52,52,52
+Bus,"625",Elsternwick - Chadstone SC,34,33,34
+Bus,"626",Chadstone SC - Middle Brighton,35,36,33
+Bus,"627",Waverley Gardens SC - Southland SC,23,23,23
+Bus,"630",Monash University - Elwood,38,39,34
+Bus,"631",Waverley Gardens SC - Southland SC,47,47,48
+Bus,"663",Belgrave - Lilydale,37,37,39
+Bus,"664",Chirnside Park SC - Knox City SC,40,40,36
+Bus,"668",Croydon Station - Ringwood Station,27,27,25
+Bus,"669",Croydon Station - Ringwood Station,19,19,19
+Bus,"670",Lilydale - Ringwood,31,31,29
+Bus,"671",Chirnside Park SC - Croydon,17,17,17
+Bus,"672",Chirnside Park SC - Croydon,27,27,26
+Bus,"675",Chirnside Park SC - Mooroolbark,8,8,0
+Bus,"675",Mooroolbark - Chirnside Park SC,8,8,0
+Bus,"677",Chirnside Park SC - Lilydale,11,11,12
+Bus,"679",Chirnside Park SC - Ringwood,45,45,45
+Bus,"680",Mooroolbark - Lilydale,17,17,0
+Bus,"681",Knox City SC,44,42,50
+Bus,"682",Knox City SC (Anti-Clockwise),40,39,45
+Bus,"683",Warburton - Chirnside Park SC,43,43,43
+Bus,"684",Melbourne - Eildon,10,11,10
+Bus,"685",Lilydale - Healesville,21,21,21
+Bus,"688",Upper Ferntree Gully - Croydon,42,41,43
+Bus,"689",Montrose - Croydon Station,19,19,19
+Bus,"690",Boronia - Croydon,33,33,34
+Bus,"691",Boronia - Waverley Gardens SC,45,45,44
+Bus,"693",Belgrave - Oakleigh,47,47,47
+Bus,"694",Mt Dandenong - Belgrave,17,17,17
+Bus,"695",Gembrook - Belgrave,27,26,31
+Bus,"695F",Gembrook - Belgrave,47,46,47
+Bus,"696",Olinda - Monbulk,7,7,0
+Bus,"697",Belgrave South - Belgrave,11,11,11
+Bus,"699",Upwey - Belgrave,23,23,20
+Bus,"701",Bentleigh - Oakleigh,25,25,24
+Bus,"703",Blackburn - Middle Brighton,60,60,64
+Bus,"704",Clayton - Oakleigh,26,26,27
+Bus,"705",Springvale - Mordialloc,31,31,0
+Bus,"706",Chelsea - Mordialloc,12,12,0
+Bus,"708",Carrum - Hampton,58,58,57
+Bus,"709",Waterways - Mordialloc,29,29,29
+Bus,"73",Willowbank Rd - Gisborne Station Via Town Centre,15,15,16
+Bus,"732",Upper Ferntree Gully - Box Hill,19,21,16
+Bus,"733",Box Hill - Oakleigh,47,47,53
+Bus,"734",Glen Waverley - Glen Iris,23,23,23
+Bus,"735",Nunawading - Box Hill,36,36,36
+Bus,"736",Blackburn - Mitcham,52,53,48
+Bus,"737",Monash University - Croydon,56,55,59
+Bus,"738",Knox City - Mitcham,21,21,20
+Bus,"74",Willowbank Rd - Gisborne Station Via Town Centre,20,20,20
+Bus,"740",Vermont East - Mitcham,16,16,0
+Bus,"742",Chadstone SC - Ringwood Station,30,30,30
+Bus,"745",Wantirna /  Boronia - Bayswater,12,12,0
+Bus,"753",Bayswater - Glen Waverley,39,39,40
+Bus,"754",Glen Waverley - Rowville,25,24,26
+Bus,"755",Knox City SC - Bayswater,44,44,46
+Bus,"757",Scoresby - Knox City SC,19,19,0
+Bus,"758",Knoxfield - Knox City SC,15,15,0
+Bus,"760",Karingal - Frankston,27,27,26
+Bus,"765",Box Hill - Mitcham,37,38,35
+Bus,"766",Box Hill - Burwood,16,16,16
+Bus,"767",Box Hill - Southland SC,53,53,51
+Bus,"77",Bullengarook CFA - Gisborne Via Bullengarook CFA,4,4,4
+Bus,"770",Karingal - Frankston,16,16,17
+Bus,"771",Langwarrin - Frankston,24,24,25
+Bus,"772",Eliza Heights - Frankston,15,15,15
+Bus,"773",Frankston South - Frankston,9,9,9
+Bus,"774",Delacombe Park - Frankston,8,8,0
+Bus,"775",Lakewood - Frankston,14,14,15
+Bus,"776",Pearcedale - Frankston,18,18,19
+Bus,"777",McClelland Drive - Karingal  SC,5,5,0
+Bus,"778",Carrum Downs - Kananook Station,12,12,0
+Bus,"779",Belvedere - Frankston,17,17,17
+Bus,"780",Carrum - Frankston,19,19,19
+Bus,"781",Frankston Station - Mornington Peninsula,54,54,54
+Bus,"782",Flinders - Frankston,38,38,36
+Bus,"783",Hastings - Frankston,28,28,0
+Bus,"784",Osborne - Frankston,40,40,40
+Bus,"785",Mornington East - Frankston,41,41,41
+Bus,"786",St Andrews Beach - Rye,11,11,11
+Bus,"787",Safety Beach - Safety Beach,41,41,41
+Bus,"788",Portsea - Frankston,74,74,77
+Bus,"789",Langwarrin - Frankston Station,24,24,24
+Bus,"790",Frankston Station - Langwarrin,22,22,22
+Bus,"791",Cranbourne Station - Frankston Station,31,31,31
+Bus,"792",Botanic Ridge and Pearcedale - Cranbourne Station,23,23,22
+Bus,"795",Warneet - Cranbourne,21,21,0
+Bus,"796",Clyde - Cranbourne Station,14,14,15
+Bus,"798",Selandra Rise - Cranbourne Park SC,15,15,15
+Bus,"799",The Avenue Village SC - Merinda Park Station,17,17,17
+Bus,"800",Chadstone SC - Dandenong,38,38,37
+Bus,"802",Chadstone SC - Dandenong,44,44,0
+Bus,"804",Chadstone SC - Dandenong,56,56,58
+Bus,"811",Brighton - Dandenong,79,79,79
+Bus,"812",Brighton - Dandenong,46,46,30
+Bus,"813",Waverley Gardens SC - Dandenong,41,41,40
+Bus,"814",Springvale South - Dandenong,44,44,45
+Bus,"816",Noble Park Station - Keysborough South,19,19,19
+Bus,"822",Sandringham - Chadstone SC,42,42,42
+Bus,"823",Southland SC - North Brighton,21,21,0
+Bus,"824",Keysborough - Moorabbin,43,43,45
+Bus,"825",Southland SC - Moorabbin,32,32,32
+Bus,"828",Berwick - Hampton,74,74,73
+Bus,"831",Kingsmere Estate - Berwick Station,10,10,9
+Bus,"832",Carrum Downs - Frankston,32,32,32
+Bus,"833",Carrum Downs - Frankston,39,39,39
+Bus,"834",Berwick Station,27,27,26
+Bus,"835",Berwick Station,31,31,32
+Bus,"836",Eden Rise SC - Berwick Station,20,20,20
+Bus,"837",Beaconsfield East - Berwick Station,17,17,16
+Bus,"838",Emerald - Fountain Gate SC,18,18,0
+Bus,"839",North Berwick - Berwick Station,14,14,14
+Bus,"840",Gembrook - Pakenham,17,17,17
+Bus,"841",Cranbourne - Narre Warren North,30,30,31
+Bus,"842",Endeavour Hills SC - Fountain Gate SC,12,12,0
+Bus,"843",Endeavour Hills - Dandenong Station,28,28,28
+Bus,"843",Mossgiel Park - Dandenong,28,28,29
+Bus,"844",Doveton - Dandenong,15,15,15
+Bus,"845",Endeavour Hills - Dandenong,29,29,29
+Bus,"846",Eden Rise SC - Berwick Station,15,15,15
+Bus,"847",Berwick - Casey Central SC,21,21,20
+Bus,"848",Brandon Park SC - Dandenong,39,39,39
+Bus,"850",Glen Waverley - Dandenong,37,37,37
+Bus,"857",Chelsea - Dandenong,30,30,41
+Bus,"858",Aspendale Gardens - Edithvale,22,22,22
+Bus,"861",Endeavour Hills - Dandenong,25,25,25
+Bus,"862",Chadstone SC - Dandenong,49,49,48
+Bus,"863",Hampton Park SC - Endeavour Hills SC,27,27,27
+Bus,"881",Merinda Park Station - Clyde North,16,16,16
+Bus,"885",Springvale - Glen Waverley,21,21,20
+Bus,"887",Mornington Peninsula - Frankston Station,16,16,16
+Bus,"888",Clyde - Berwick Station,15,15,15
+Bus,"889",Clyde North - Berwick Station,14,14,14
+Bus,"890",Dandenong Station - Lynbrook Station,19,19,19
+Bus,"891",Lynbrook Station - Fountain Gate SC,27,27,28
+Bus,"892",Casey Central SC - Dandenong Station,30,30,30
+Bus,"893",Cranbourne Park SC - Dandenong Station,33,33,32
+Bus,"894",Amberly Park - Hallam  Station,22,22,25
+Bus,"895",Narre Warren South - Fountain Gate SC,21,21,21
+Bus,"897",Lynbrook Station - Clyde North,27,27,27
+Bus,"898",Clyde North - Cranbourne Station,24,24,25
+Bus,"899",The Avenue Village SC - Berwick Station,13,13,13
+Bus,"900",Caulfield - Stud Park SC (Rowville),21,21,21
+Bus,"900",Stud Park SC - Caulfield,21,21,21
+Bus,"901",Frankston - Melbourne Airport,139,138,141
+Bus,"902",Chelsea - Airport West,127,128,123
+Bus,"903",Mordialloc - Altona,125,125,125
+Bus,"905",The Pines SC - City (King/Lonsdale Sts),35,36,34
+Bus,"906",Warrandyte - City (King/Lonsdale Sts),34,34,33
+Bus,"907",Mitcham - City (King/Lonsdale Sts),38,39,37
+Bus,"908",The Pines SC - City (King/Lonsdale Sts),20,21,16
+Bus,"922",Southland SC - St Kilda Station,54,53,55
+Bus,"923",Southland SC - St Kilda Station,48,52,39
+Bus,"925",Lakeside - Pakenham Station,15,16,15
+Bus,"926",Pakenham Station - Fountain Gate SC,35,35,35
+Bus,"927",Pakenham North - Pakenham Station,12,12,11
+Bus,"928",Cardinia Road Station - Pakenham Station,17,17,17
+Bus,"929",Pakenham North (Army Rd) - Pakenham Station,9,9,9
+Bus,"943",Melton - Watergardens Station,16,16,16
+Bus,"947",Newport Station - Footscray,20,20,20
+Bus,"949",Williams Landing Station,38,38,38
+Bus,"965",Healesville - Lilydale Station,12,9,12
+Bus,FlexRMelt,Melton,2,2,2
+Bus,Wallan 1,Wallan Central - Wallan Station Via Wallan Central,9,9,9
+Bus,Wallan 2,Springridge - Wallan Station Via Springridge,8,8,8
+Bus,Wallan 3,Wallara Waters Shuttle - Wallan Station Via Wallara Waters Shuttle,3,3,0
+Bus,Wallan Link A,Wallan Station Link A Via Wallan Central,20,20,0
+Train,"",Ararat - Melbourne Via Ballarat,6,6,7
+Train,"",Ballarat - Melbourne Via Melton,6,6,7
+Train,"",Geelong - Melbourne Via Geelong,4,3,4
+Train,"",Melbourne - Albury Via Seymour,1,1,1
+Train,"",Melbourne - Bairnsdale Via Sale & Traralgon,4,4,5
+Train,"",Melbourne - Bendigo Via Sunbury,5,5,5
+Train,"",Melbourne - Echuca/Moama Via Bendigo or Heathcote,5,5,5
+Train,"",Melbourne - Maryborough Via Ballarat,7,7,7
+Train,"",Melbourne - Seymour Via Broadmeadows,4,4,5
+Train,"",Melbourne - Swan Hill Via Bendigo,1,1,1
+Train,"",Shepparton - Melbourne Via Seymour,4,4,4
+Train,"","Traralgon - Melbourne Via Pakenham, Moe & Morwell",5,5,5
+Train,"",Warrnambool - Melbourne Via Geelong & Colac,1,1,1
+Train,Alamein,Alamein - City,9,10,7
+Train,Belgrave,Belgrave - City,20,21,18
+Train,Craigieburn,Craigieburn - City,15,18,11
+Train,Cranbourne,Cranbourne - City,19,20,17
+Train,Flemington Racecourse,City,4,5,4
+Train,Frankston,Frankston - City,21,24,18
+Train,Glen Waverley,Glen Waverley - City,16,16,17
+Train,Hurstbridge,Hurstbridge - City,15,15,15
+Train,Lilydale,Lilydale - City,18,17,20
+Train,Mernda,Mernda - City,25,25,25
+Train,Overland,Adelaide,1,1,0
+Train,Overland,Melbourne - Adelaide,1,1,0
+Train,Pakenham,Pakenham - City,22,21,23
+Train,Pakenham,Pakenham - City Via Pakenham,1,1,2
+Train,Sandringham,Sandringham - City,14,14,13
+Train,Stony Point,Stony Point - Frankston,10,9,10
+Train,Sunbury,Sunbury - City,13,14,10
+Train,Upfield,Upfield - City,14,16,12
+Train,Werribee,Werribee - City,13,11,16
+Train,Williamstown,Williamstown - City,10,11,9
+Tram,"1",South Melbourne Beach - East Coburg,38,39,38
+Tram,"109",Port Melbourne - Box Hill,49,49,48
+Tram,"11",Victoria Harbour Docklands - West Preston,40,40,40
+Tram,"12",St Kilda (Fitzroy St) - Victoria Gardens,34,34,34
+Tram,"16",Kew - Melbourne University via St Kilda Beach,60,61,58
+Tram,"19","Flinders Street Station, City - North Coburg",31,31,31
+Tram,"3",East Malvern - Melbourne University,41,42,40
+Tram,"30",Central Pier Docklands - St Vincents Plaza,10,10,10
+Tram,"35",Clockwise - Clockwise,27,27,27
+Tram,"48",Victoria Harbour Docklands - North Balwyn,39,39,39
+Tram,"5",Malvern (Burke Road) - Melbourne University,35,36,34
+Tram,"57","Flinders Street Station, City - West Maribyrnong",34,34,35
+Tram,"58",Toorak - West Coburg,45,44,45
+Tram,"59","Flinders Street Station, City - Airport West",38,38,38
+Tram,"6",Glen Iris - Moreland,53,54,51
+Tram,"64",East Brighton - Melbourne University,41,41,40
+Tram,"67",Carnegie - Melbourne University,44,44,45
+Tram,"70",Waterfront City Docklands - Wattle Park,45,45,44
+Tram,"72",Camberwell - Melbourne University,47,47,47
+Tram,"75",Central Pier Docklands - Vermont South,59,60,59
+Tram,"78",Balaclava via Prahran - North Richmond,25,25,24
+Tram,"82",Moonee Ponds - Footscray,26,26,26
+Tram,"86",Waterfront City Docklands - Bundoora RMIT,56,55,58
+Tram,"96",St Kilda Beach - East Brunswick,35,35,35

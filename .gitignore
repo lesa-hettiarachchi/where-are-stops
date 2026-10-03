@@ -1,0 +1,25 @@
+# R session state - never commit, and never deploy.
+# .RData silently restores stale objects at startup and masks real bugs.
+.RData
+.Rhistory
+.Rapp.history
+.Ruserdata
+
+# RStudio project state
+.Rproj.user/
+
+# knitr / rmarkdown build output
+*_cache/
+*_files/
+.knit.md
+.utf8.md
+
+# macOS
+.DS_Store
+
+# Deployment records contain the account name and bundle ids.
+# Keep this ignored unless you want the deploy target tracked in the repo;
+# rsconnect recreates it from your credentials on the next deployApp().
+rsconnect/
+processed/
+clean/

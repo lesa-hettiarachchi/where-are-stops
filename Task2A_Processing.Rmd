@@ -1,0 +1,271 @@
+---
+title: "CSE5DEV | Task 2A: Data Processing and Analysis"
+author: "Lesandu Hetti Arachchige | 21533031"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: show
+    theme: flatly
+    highlight: tango
+---
+
+```{r}
+library(sf)
+library(tidyverse)
+```
+
+# Purpose
+
+Task 2A turns the cleaned tables produced in Task 1B (`clean/` folder) into the three analysis-ready tables needed by the three task abstractions planned in Task 1A. Every table written to `processed/` is read directly by the Shiny app (`app.R`), so this document is the evidence that each planned visualization has its data prepared before it is implemented.
+
+| Task abstraction | Indicator type | Output table |
+|------------------------|------------------------|------------------------|
+| TA1 – Summarise stop count by transport mode per LGA | Raw (distinct counts) | `processed/ta1_stop_counts.csv` |
+| TA2 – Compare stop density (stops per km²) per LGA | Processed (rate) | `processed/ta2_stop_density.csv` + `processed/lga_boundaries.geojson` |
+| TA3 – Rank LGAs on a 0–100 under-served index (residents per stop) | Normalised / indexed | `processed/ta3_underserved_index.csv` |
+
+A combined `processed/lga_master.csv` (one row per LGA, all indicators) is also written because it is the simplest table for the public to read and it is what the "Processed Tables" tab of the app displays.
+
+# Import cleaned data
+
+All inputs come from Task 1B. Unincorporated Vic has already been removed, so the analysis unit is the **35 Greater Melbourne LGAs**.
+
+```{r}
+area   <- read_csv("clean/clean_area.csv",       show_col_types = FALSE)
+stops  <- read_csv("clean/clean_stops.csv",      show_col_types = FALSE)
+sector <- read_csv("clean/clean_sector.csv",     show_col_types = FALSE)
+pop    <- read_csv("clean/clean_population.csv", show_col_types = FALSE)
+lga_geo <- st_read("clean/clean_lga_area.geojson", quiet = TRUE)
+
+tibble(
+  table = c("area", "stops", "sector", "pop", "lga_geo"),
+  rows  = c(nrow(area), nrow(stops), nrow(sector), nrow(pop), nrow(lga_geo)),
+  lgas  = c(n_distinct(area$lga_code21), n_distinct(stops$lga_code21),
+            n_distinct(sector$lga_code21), n_distinct(pop$lga_code21),
+            n_distinct(lga_geo$lga_code21))
+)
+```
+
+Every table covers the same 35 LGAs, so no LGA will be lost in the joins below.
+
+```{r}
+lga_geo <- lga_geo %>% mutate(lga_code21 = as.numeric(lga_code21))
+setdiff(area$lga_code21, stops$lga_code21)
+setdiff(area$lga_code21, pop$lga_code21)
+setdiff(area$lga_code21, lga_geo$lga_code21)
+```
+
+# Supporting context - Dominant Sector
+
+`clean_sector.csv` records how much of each LGA's area falls inside the Inner, Middle and Outer Melbourne sectors. Five LGAs overlap two sectors. Following the metadata advice, I do **not** split any stop or population value by these proportions. Instead each LGA is given a single *dominant sector* (the sector holding the largest share of its area) which is only used as a filter / colour in the app. Stonnington is an exact 50/50 tie between Inner and Middle, it is assigned to Inner Melbourne because it is the more central of the two.
+
+```{r}
+sector_levels <- c("Inner Melbourne", "Middle Melbourne", "Outer Melbourne")
+
+dominant_sector <- sector %>%
+  mutate(sector = factor(sector, levels = sector_levels)) %>%
+  group_by(lga_code21) %>%
+  arrange(desc(lga_part_sqkm_pct), sector, .by_group = TRUE) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(lga_code21, dominant_sector = sector, sector_share = lga_part_sqkm_pct)
+
+dominant_sector %>% count(dominant_sector)
+```
+
+# TA1 – Stop count by transport mode
+
+**Action–target:** *Summarise* the stop count by transport mode for each LGA.
+
+The stop-route file has one row per stop-route pair, so a stop served by six bus routes appears six times. TA1 therefore counts **distinct `stop_id`**, not rows. Two counts are produced:
+
+- `total` – distinct stops in the LGA regardless of mode;
+- `bus`, `train`, `tram` – distinct stops served by that mode.
+
+Because 54 stops are served by more than one mode (found in Task 1B), the three mode columns add up to slightly more than `total`. This is intentional and is stated in the app.
+
+```{r}
+ta1_total <- stops %>%
+  group_by(lga_code21, lga_name21) %>%
+  summarise(total = n_distinct(stop_id), .groups = "drop")
+
+ta1_mode <- stops %>%
+  distinct(lga_code21, vehicle, stop_id) %>%
+  count(lga_code21, vehicle, name = "stops") %>%
+  mutate(vehicle = str_to_lower(vehicle)) %>%
+  pivot_wider(names_from = vehicle, values_from = stops, values_fill = 0)
+
+ta1 <- area %>%
+  select(lga_code21, lga_name21) %>%
+  left_join(ta1_total %>% select(-lga_name21), by = "lga_code21") %>%
+  left_join(ta1_mode, by = "lga_code21") %>%
+  mutate(across(c(total, bus, train, tram), ~ replace_na(., 0))) %>%
+  left_join(dominant_sector, by = "lga_code21") %>%
+  arrange(desc(total))
+
+ta1
+```
+
+Sanity checks: the sum of `total` equals the number of distinct stops in the whole file, and the excess of the mode columns over `total` equals the number of multi-mode stops.
+
+```{r}
+tibble(
+  sum_total          = sum(ta1$total),
+  distinct_stop_ids  = n_distinct(stops$stop_id),
+  mode_sum_minus_tot = sum(ta1$bus + ta1$train + ta1$tram) - sum(ta1$total),
+  lgas_without_train = sum(ta1$train == 0),
+  lgas_without_tram  = sum(ta1$tram == 0)
+)
+```
+
+```{r}
+write_csv(ta1, "processed/ta1_stop_counts.csv")
+```
+
+# TA2 – Stop density per km²
+
+**Action–target:** *Compare* stop density across LGAs.
+
+Each TA1 count is divided by the LGA area (`sqkm` from `clean_area.csv`) to give **stops per square kilometre**, for the total and for each mode. An LGA with no stops of a mode simply has a density of 0 for that mode. The distance-to-CBD column is carried along as location context only.
+
+```{r}
+ta2 <- ta1 %>%
+  left_join(area %>% select(lga_code21, sqkm, cbd_euclidean_km), by = "lga_code21") %>%
+  mutate(
+    density_total = total / sqkm,
+    density_bus   = bus   / sqkm,
+    density_train = train / sqkm,
+    density_tram  = tram  / sqkm
+  ) %>%
+  select(lga_code21, lga_name21, dominant_sector, sqkm, cbd_euclidean_km,
+         total, bus, train, tram,
+         density_total, density_bus, density_train, density_tram) %>%
+  arrange(density_total)
+
+ta2 %>% select(lga_name21, sqkm, total, density_total) %>% head(10)
+```
+
+The ten sparsest LGAs are all large outer LGAs. Compare this with TA1, where several of them (for example Yarra Ranges and Mornington Peninsula) have a *moderate or high* raw stop count. This is exactly the contrast TA2 was planned to expose.
+
+```{r}
+ta2 %>%
+  mutate(rank_raw = min_rank(total), rank_density = min_rank(density_total)) %>%
+  select(lga_name21, total, rank_raw, density_total, rank_density) %>%
+  arrange(rank_density) %>%
+  head(8)
+```
+
+```{r}
+write_csv(ta2, "processed/ta2_stop_density.csv")
+```
+
+## Boundary geometry for the choropleth 
+
+The cleaned GeoJSON is 5 MB, which is slow to send to a browser. The polygons are simplified to a 100 m tolerance in a projected CRS (GDA2020 / MGA zone 55) and transformed back to WGS84 for Leaflet. Only geometry is stored here – the app joins the TA2 table onto it by `lga_code21` at run time, so the density values shown on the map are exactly those in `ta2_stop_density.csv`. \
+(Used help of AI to to this performance increase.)
+
+```{r}
+lga_boundaries <- lga_geo %>%
+  mutate(lga_code21 = as.numeric(lga_code21)) %>%   # GeoJSON stores the code as text
+  select(lga_code21, lga_name21) %>%
+  st_transform(7855) %>%
+  st_simplify(dTolerance = 100, preserveTopology = TRUE) %>%
+  st_transform(4326)
+
+tibble(
+  features = nrow(lga_boundaries),
+  invalid  = sum(!st_is_valid(lga_boundaries)),
+  empty    = sum(st_is_empty(lga_boundaries)),
+  matched_to_ta2 = sum(lga_boundaries$lga_code21 %in% ta2$lga_code21)
+)
+
+st_write(lga_boundaries, "processed/lga_boundaries.geojson",
+         delete_dsn = TRUE, quiet = TRUE)
+```
+
+# TA3 – Under-served index 0–100 
+
+**Action–target:** *Rank* LGAs on a 0–100 index of residents per stop.
+
+Population (ABS 2024, aligned to 2021 LGA codes in Task 1B) is divided by the TA1 stop counts to give **residents per stop**. Raw residents-per-stop values are not comparable across modes (a train stop naturally serves far more people than a bus stop), so each mode is min–max scaled to 0–100 separately:
+
+$$\text{index} = 100 \times \frac{x - \min(x)}{\max(x) - \min(x)}$$
+
+where 0 = best served LGA and 100 = most under-served LGA *for that mode*. Where an LGA has **zero stops** of a mode, residents-per-stop is undefined (division by zero). These LGAs are not scored; they are flagged as `"No service"` and reported separately in the app, as planned in Task 1A.
+
+```{r}
+minmax <- function(x) {
+  if (all(is.na(x))) return(x)
+  100 * (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+}
+
+ta3 <- ta1 %>%
+  left_join(pop %>% select(lga_code21, total_pop), by = "lga_code21") %>%
+  mutate(
+    rps_total = if_else(total > 0, total_pop / total, NA_real_),
+    rps_bus   = if_else(bus   > 0, total_pop / bus,   NA_real_),
+    rps_train = if_else(train > 0, total_pop / train, NA_real_),
+    rps_tram  = if_else(tram  > 0, total_pop / tram,  NA_real_),
+    index_total = minmax(rps_total),
+    index_bus   = minmax(rps_bus),
+    index_train = minmax(rps_train),
+    index_tram  = minmax(rps_tram),
+    service_train = if_else(train > 0, "Scored", "No service"),
+    service_tram  = if_else(tram  > 0, "Scored", "No service")
+  ) %>%
+  select(lga_code21, lga_name21, dominant_sector, total_pop,
+         total, bus, train, tram,
+         rps_total, rps_bus, rps_train, rps_tram,
+         index_total, index_bus, index_train, index_tram,
+         service_train, service_tram) %>%
+  arrange(desc(index_total))
+
+ta3 %>% select(lga_name21, total_pop, total, rps_total, index_total) %>% head(10)
+```
+
+Checks: every scored index lies in 0–100, the number of unscored LGAs per mode equals the number of LGAs with zero stops of that mode, and no population value is missing.
+
+```{r}
+tibble(
+  min_index_total = min(ta3$index_total), max_index_total = max(ta3$index_total),
+  no_train_service = sum(ta3$service_train == "No service"),
+  no_tram_service  = sum(ta3$service_tram  == "No service"),
+  unscored_train   = sum(is.na(ta3$index_train)),
+  unscored_tram    = sum(is.na(ta3$index_tram)),
+  missing_pop      = sum(is.na(ta3$total_pop))
+)
+```
+
+```{r}
+write_csv(ta3, "processed/ta3_underserved_index.csv")
+```
+
+# Master table
+
+One row per LGA with every indicator used in the app. This is the table shown on the "Processed Tables" tab.
+
+```{r master}
+lga_master <- ta2 %>%
+  left_join(ta3 %>% select(lga_code21, total_pop,
+                           starts_with("rps_"), starts_with("index_"),
+                           starts_with("service_")),
+            by = "lga_code21") %>%
+  mutate(across(where(is.numeric) & !c(lga_code21, total, bus, train, tram, total_pop),
+                ~ round(., 3))) %>%
+  arrange(lga_name21)
+
+write_csv(lga_master, "processed/lga_master.csv")
+
+glimpse(lga_master)
+```
+
+# Output summary
+
+```{r outputs}
+tibble(file = list.files("processed", full.names = TRUE)) %>%
+  mutate(size_kb = round(file.size(file) / 1024, 1))
+```
+
+All four tables plus the simplified boundary file are now ready for implementation in `app.R` (Task 2B).

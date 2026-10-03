@@ -1,0 +1,577 @@
+---
+title: "CSE5DEV | Task 1B: Data Preprocessing"
+author: "Lesandu Hetti Arachchige | 21533031"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    theme: flatly
+    highlight: tango
+---
+
+```{r}
+library(sf)
+library(tidyverse)
+library(readxl)
+```
+
+# Import & Inspect
+
+Initially, import all data files into DataFrames, check row and column counts separately, and inspect the head of each DataFrame to understand whether it matches what metadata.txt expects.
+
+```{r}
+area      <- read_csv("raw/lga_area.csv")
+details   <- read_csv("raw/lga_details.csv")
+adjacents <- read_csv("raw/lga_adjacents.csv")
+sector    <- read_csv("raw/lga_sector.csv")
+stops     <- read_csv("raw/lga_stops_routes.csv")
+freq      <- read_csv("raw/routes_city_freq.csv")
+map21n24   <- read_csv("raw/LGA_2021_LGA_2024.csv")
+
+tibble(
+  file = c("area","details","adjacents","sector","stops","freq","map21n24"),
+  rows = c(nrow(area),nrow(details),nrow(adjacents),nrow(sector),nrow(stops),nrow(freq),nrow(map21n24)),
+  cols = c(ncol(area),ncol(details),ncol(adjacents),ncol(sector),ncol(stops),ncol(freq),ncol(map21n24))
+)
+```
+
+```{r}
+head(area)
+```
+
+```{r}
+head(details)
+```
+
+```{r}
+head(adjacents)
+```
+
+```{r}
+head(sector)
+```
+
+```{r}
+head(stops)
+```
+
+```{r}
+head(freq)
+```
+
+```{r}
+head(map21n24)
+```
+
+In this part, I inspected the area and checked the GeoJSON file for missing values. I also ran a specialised test to check whether any LGAs in the area are missing from the GeoJSON file. This is essential for TA2.
+
+```{r}
+lga_geo <- st_read("raw/lga_area.geojson")
+
+print(nrow(lga_geo))          
+print(st_crs(lga_geo))
+print(sum(!st_is_valid(lga_geo)))
+
+print(setdiff(area$lga_code21, lga_geo$lga_code21))
+```
+
+```{r}
+stops_geo <- st_read("raw/stops.geojson")
+
+# some basic checks
+print(nrow(stops_geo))          
+print(names(stops_geo))         
+print(st_crs(stops_geo))        
+print(sum(!st_is_valid(stops_geo)))
+```
+
+# Issue 1 - Cardinia area corrupted by unquoted comma
+
+As you can see, Cardinia LGA has lga_sqkm = 1, which is not possible. Also, lga_part_sqkm_pct is a positive decimal value less than or equal to 1; therefore, the value of 283  cannot be there. Furthermore, the **sector** dataframe has 6 columns, and the 6th column is not defined.
+
+```{r}
+filtered_sector <- filter(sector, lga_part_sqkm_pct > 1 | lga_sqkm <= 1)
+filtered_sector <- select(filtered_sector, 1, 2, 3, 4, 5, 6)
+print(filtered_sector)
+```
+
+When I cross-check with the **area** dataframe, we can see that the sqkm of Cardinia is 1283. So we can assume the value is split into 2 columns, which is further proven by viewing the CSV file through the IDE. The problem was that the CSV used 1,283 to write 1283 without enclosing it in inverted commas. This caused 1 and 283 to split into 2 columns and created an extra column for a value that should have been in lga_part_sqkm_pct.
+
+```{r}
+cardinia <- filter(area, lga_code21 == "21450")
+cardinia <- select(cardinia, lga_name21, sqkm)
+print(cardinia)
+```
+
+Here I put actual values to Cardinia colunms.
+
+```{r}
+sector$lga_sqkm[sector$lga_code21 == "21450"] <- 1283
+sector$lga_part_sqkm_pct[sector$lga_code21 == "21450"] <- 1
+
+cardinia_sector <- filter(sector, lga_code21 == "21450")
+cardinia_sector <- select(cardinia_sector, 1, 2, 3, 4, 5, 6)
+print(cardinia_sector)
+```
+
+This fix is important because the values are illogical, and linking them to **area** dataframe values will increase linkage issues. However, this is due to a structural issue.
+
+# Issue 2 - Stray trailing empty column in sector
+
+As I explained in the previous issue, the **sector** dataframe has an extra column, which is shown here again. Also, you can see there are no values in this column except for the accidental value from Cardinia.
+
+```{r}
+colnames(sector)
+
+cat("Null Rows: ",sum(is.na(sector[[6]])))
+```
+
+By following this step, I remove this stray column from the dataframe.
+
+```{r}
+sector <- sector %>% select(-6)    # drop the 6th (stray) column by position
+colnames(sector)
+```
+
+Removing this stray column fixes the 40+ missing value issue, which is, in a way, caused by a structural issue.
+
+# Issue 3 - Melbourne facility counts missing
+
+While inspecting details.csv, I found there are no facility values for Melbourne. This is a data missing issue. In the code block below, you can see that none of the information columns contains values for this LGA.
+
+```{r}
+missing_counts <- colSums(is.na(details))
+print(missing_counts)
+```
+
+```{r}
+rows_with_missing <- filter(details, if_any(education:public, is.na))
+print(rows_with_missing)
+```
+
+There is no actual fix for this issue, which left me with either removing the Melbourne column altogether from the analysis or filling it with 0 and continuing. I chose to fill it with 0s and keep it in the analysis because many more analyses could be carried out on these data without involving this **detailed** dataframe. In an analysis of Greater Melbourne LGA, removing Melbourne LGA because of this would leave an unavailable hole in the analysis.
+
+```{r}
+details <- mutate(details, across(education:public, ~ replace_na(., 0)))
+
+melbourne <- filter(details, lga_name21 == "Melbourne")
+print(melbourne)
+```
+
+# Issue 4 - Wyndham missing its own lga_code21
+
+In lga_adjacents.csv, in some rows, Wyndham LGA lga_code21 is missing. This is confirmed by calling
+
+is.na(lga_code21).
+
+```{r}
+missing_code <- filter(adjacents, is.na(lga_code21))
+missing_name <- distinct(missing_code, lga_name21)
+print(missing_name)
+```
+
+However, within the same .csv, some neighbours (adjacents) have a link to Wyndham lga_code21. Therefore, this has become a simple linkage and missing value issue at the same time. In the following code blocks, I check neighbours that connect to Wyndham, then get the lga_code_adj (which is the same) and set it as Wyndham's lga_code21.
+
+```{r}
+neighbors <- filter(adjacents, lga_name_adj == "Wyndham")
+wyndham_code <- distinct(neighbors, lga_code_adj)
+print(wyndham_code)
+```
+
+```{r}
+adjacents$lga_code21[adjacents$lga_name21 == "Wyndham" & is.na(adjacents$lga_code21)] <- 27260
+
+adjacents$lga_code21 <- as.numeric(unlist(adjacents$lga_code21))
+
+wyndham_code <- filter(adjacents, lga_name21 == "Wyndham")
+wyndham_code <- distinct(wyndham_code, lga_code21)
+print(wyndham_code)
+```
+
+Without this code linking these values with areas, transport routes are impossible. Therefore, fixing this issue is important.
+
+# Issue 5 - Commas in route_name
+
+When inspecting lga_stops_routes.csv, I found some route_names had commas(,) in their names, which can lead to unnecessary column addition. This will not happen if they are wrapped in double quotes (""). Here, I checked the top 10 route names to see whether they are wrapped in double quotes (" ") or have values that create unnecessary columns.
+
+```{r}
+for (r in head(stops$route_name, 10)) {
+  print(r)
+}
+```
+
+This issue was possible for routes_city_freq.csv as well. Therefore, I did the same for **freq** dataframe.
+
+```{r}
+for (r in head(freq$route_name, 10)) {
+  print(r)
+}
+```
+
+This part is important because if these values create stray columns, it is hard to capture the real values and can cause numerous problems, such as structure-issue leakages and illogical values.
+
+# Issue 6 - Route_number as a join key
+
+The next issue found in lga_stops_routes.csv is that route_number is mixed: some are numerical, some are alphanumeric, some are plain text, and many have no value. route_number is super important because it connects stops with city frequency. This is also evident in routes_city_freq.csv. In the following code blocks, I focus on null values in both.
+
+```{r}
+# count blank or missing route numbers in freq
+blank_count <- 0
+for (i in 1:nrow(freq)) {
+  if (is.na(freq$route_number[i]) || freq$route_number[i] == "") {
+    blank_count <- blank_count + 1
+  }
+}
+print(blank_count)
+```
+
+```{r}
+# count blank or missing route numbers in stops
+blank_count <- 0
+for (i in 1:nrow(stops)) {
+  if (is.na(stops$route_number[i]) || stops$route_number[i] == "") {
+    blank_count <- blank_count + 1
+  }
+}
+print(blank_count)
+```
+
+From these missing values, it's clear that route_number cannot be used as a key when joining these 2 dataframes. The next best candidate is route_name. First, we need to identify whether there are any null values in route_name in the **freq** dataframe. If not, then are there any unique route_names in the **freq** dataframe that are not available in the **stop** dataframe? In the following code blocks I performed these tasks.
+
+```{r}
+# count blank or missing route names in freq
+blank_count <- 0
+for (i in 1:nrow(freq)) {
+  if (is.na(freq$route_name[i]) || freq$route_name[i] == "") {
+    blank_count <- blank_count + 1
+  }
+}
+print(blank_count)
+```
+
+```{r}
+# get unique route names from each
+freq_names <- unique(freq$route_name)
+stops_names <- unique(stops$route_name)
+
+# check which freq names are not in stops
+missing <- freq_names[!(freq_names %in% stops_names)]
+print(missing)
+```
+
+As you can see, we can use route_name as a joining key for the **freq** and **stops** dataframe. This immensely helps to analyse the frequency of city travel each LGA gets via public transport.
+
+# Issue 7 - Records vs unique stops
+
+Another issue I found in lga_stops_routes.csv is that some stops have multiple modes. Therefore, the record count will not show the unique stop count. Using the code block below, I inspected the total records, unique stops, and the modes associated with them.
+
+```{r}
+stop_summary <- summarise(stops,
+                          records = n(),
+                          unique_stops = n_distinct(stop_id),
+                          modes = n_distinct(vehicle))
+print(stop_summary)
+```
+
+The question was, "How many stops serve as multi-mode?" For this, I grouped the unique stops, checked which stops serve more than 1 evehicle, then counted them.
+
+Most have only 1 mode, but 54 serve as multi-mode stops. This is an essential finding because treating all stops as equal could provide false information and misleading analysis.
+
+```{r}
+stops_by_id <- group_by(stops, stop_id)
+modes_per_stop <- summarise(stops_by_id, m = n_distinct(vehicle), .groups = "drop")
+
+multi_mode_counts <- count(modes_per_stop, multi_mode = m > 1)
+print(multi_mode_counts)
+```
+
+This isn't an issue itself, but this finding prevents major issues.
+
+# Issue 8 - Unincorporated Vic
+
+If we carefully cross-check the row counts in the Area and Details dataframes, we can see Details has one fewer row, which triggers the missing lga_code21 in Details. This is done in the code block.
+
+```{r}
+print(setdiff(area$lga_code21, details$lga_code21))
+```
+
+29399 is Unincorporated Vic, as per lag_area.geojson, a very small island near the Mornington Peninsula. This makes me wonder whether this LGA is missing from any other .csv files; if so, can we remove it? In the following code cell, I checked whether every other CSV file is available.
+
+```{r}
+code <- 29399
+
+cat("=== Area ===\n");   print(filter(area, lga_code21 == code))
+cat("=== Details ===\n");   print(filter(details, lga_code21 == code))
+cat("=== Adjacents ===\n"); print(filter(adjacents, lga_code21 == code | lga_code_adj == code))
+cat("=== Sector ===\n");    print(filter(sector,  lga_code21 == code))
+cat("=== Stops ===\n");     print(filter(stops,   lga_code21 == code))
+cat("=== Code ===\n");       print(filter(map21n24, LGA_CODE_2021 == code | LGA_CODE_2024 == code))
+```
+
+Based on the results, Unincorporated Vic does not appear strongly in any of the data frames apart from the **area**, **stops**, **sector** and **map21n24** dataframes. However, apart from stops these appearences doest not pose any linkage issues. For stops they could link with **freq** dataframe and cuase linkage issues.
+
+However, these stops or routes do not incorporate with the **freq** dataframe. Therefore, removing this value and establishing 35 LGAs would not cause linkage issues or affect future analysis.
+
+```{r}
+freq %>% filter(is.na(route_name) | route_name == "Bright - Omeo Via Hotham Heights") %>% nrow()
+```
+
+```{r}
+code <- 29399
+
+area   <- area   %>% filter(lga_code21 != code)
+sector <- sector %>% filter(lga_code21 != code)
+stops  <- stops  %>% filter(lga_code21 != code)
+map21n24 <- map21n24 %>% filter(LGA_CODE_2021 != code)
+```
+
+Also in lga_area.geojson Unincorporated Vic is visible, which will throw linkage issues in future tasks. Therefore, in the following block, I remove it too.
+
+```{r}
+cat("geojson features before:", nrow(lga_geo), "\n")
+
+lga_geo <- lga_geo %>% filter(lga_code21 %in% area$lga_code21)
+
+cat("geojson features after:", nrow(lga_geo), "\n")
+
+
+cat("in geojson but not in area:", length(setdiff(lga_geo$lga_code21, area$lga_code21)), "\n")
+cat("in area but not in geojson:", length(setdiff(area$lga_code21, lga_geo$lga_code21)), "\n")
+```
+
+# Issue 9 - Assessment LGAs
+
+When further assessing the CSV files, we can see there are 1000s of stops, and even some stops do not belong to Greater Melbourne. Therefore, from the code below, I remove all unnecessary stops from the **stops** datafeame.
+
+In further manual assessment, I confirmed these extra LGAs are present only on lga_stops_routes.csv and LGA_2021_LGA_2024.csv
+
+```{r}
+assess_codes <- area$lga_code21          # 35 codes after dropping Unincorporated Vic
+
+stops_before <- n_distinct(stops$lga_code21)
+stops <- stops %>% filter(lga_code21 %in% assess_codes)
+
+tibble(
+  stops_lgas_before = stops_before,
+  stops_lgas_after  = n_distinct(stops$lga_code21),
+  assessment_lgas   = length(assess_codes)
+)
+```
+
+Even though removing LGAs from the stops area is straightforward, removing them from this 2021 and 2024 map is quite tricky. Because lga_code21 could be associated with multiple lga_code24, and vice versa. Not only that, but filtering also shows potential missing lga_code21 from the LGA_2021_LGA_2024.csv. This will cause linkage issues while connecting to the population data.
+
+In the following code block, I first check how many rows are in the map21n24 dataframe, then filter it to the given 35 lga_code21s, and then check how many rows remain.
+
+```{r}
+map_before <- nrow(map21n24)
+map21n24 <- map21n24 %>% filter(LGA_CODE_2021 %in% assess_codes)
+
+tibble(
+  map_rows_before = map_before,
+  map_rows_after  = nrow(map21n24),
+  assessment_lgas = length(assess_codes)
+)
+```
+
+Although the row count of the filtered map21n24 exactly equals the area LGALGA count, duplicates may be hidden here that trigger the 35 count. Therefore, I checked for duplicates and any missing LGAs in map21n24.
+
+```{r}
+counts <- table(map21n24$LGA_CODE_2021)
+print(counts[counts > 1])
+
+missing <- setdiff(assess_codes, map21n24$LGA_CODE_2021)
+print(missing)
+```
+
+This part is essential in the pre-processing process because it narrows the scope to 35 LGAs (after removing Unincorporated Vic); otherwise, there would be 564 in **map21n24** and 80-odd in the **stops** dataframe. This does not belong in this analysis and causes numerous linkage issues. This ensures there will be no issues linking the current LGAs we have with stops and ABS population data via map21n24.
+
+Before finishing, I ran a check on stops.geojson file to identify whether it includes any LGAs that are out of scope for this project, and removed them. In issue 8, I inspected and cleaned lga_area.geojson. Therefore, I will not do it here.
+
+```{r}
+scoped_stop_ids <- unique(stops$stop_id)   
+
+stops_geo_scoped <- stops_geo %>% filter(stop_id %in% scoped_stop_ids)
+
+cat("stops.geojson points before:", nrow(stops_geo),
+    " after scoping:", nrow(stops_geo_scoped), "\n")
+```
+
+# Issue 10 - Join ABS Population Data with Area
+
+In this part, I connected the population data with the area data we already had. First, I imported the downloaded Excel dataset and specifically chose Table 3 to get the total population. Using the code block below, I inspected the dataset columns.
+
+```{r}
+pop_raw <- read_excel("raw/Regional_Population_sex_and_age.xlsx", sheet = "Table 3", skip = 5)
+
+print(names(pop_raw))
+
+print(ncol(pop_raw))
+```
+
+Then, I checked whether the last column actually outputs the total number of people in each LGA.
+
+```{r}
+last_col_number <- ncol(pop_raw)
+head(pop_raw[, last_col_number])
+```
+
+n this code block, I checked how many Victorian LGAs are included in this dataset and previewed their data.
+
+```{r}
+pop_raw <- read_excel("raw/Regional_Population_sex_and_age.xlsx",
+                      sheet = "Table 3", skip = 5)
+pop_total <- pop_raw %>%
+  select(1, 2, 3, 4, total_pop = last_col()) %>%
+  rename(st_name = 2, lga_code_2024 = 3, lga_name_2024 = 4) %>%
+  filter(st_name == "Victoria") %>%
+  select(lga_code_2024, lga_name_2024, total_pop) %>%
+  mutate(total_pop = as.numeric(total_pop))
+
+print(nrow(pop_total))
+```
+
+```{r}
+pop_total %>% arrange(desc(total_pop)) %>% head(5)
+```
+
+Then I used the lga_2024 codes in the map21n24 dataframe to filter for the LGAs we wanted. I also did a quick check to see how many matched the areas we needed.
+
+```{r}
+pop_2021 <- pop_total %>%
+  mutate(lga_code_2024 = as.character(lga_code_2024)) %>%
+  left_join(
+    map21n24 %>% mutate(LGA_CODE_2024 = as.character(LGA_CODE_2024)),
+    by = c("lga_code_2024" = "LGA_CODE_2024")
+  ) %>%
+  mutate(LGA_CODE_2021 = as.character(LGA_CODE_2021)) %>%
+  filter(LGA_CODE_2021 %in% as.character(assess_codes)) %>%
+  select(lga_code21 = LGA_CODE_2021, lga_name21 = LGA_NAME_2021, total_pop)
+
+cat("assessment LGAs:", length(assess_codes), "\n")
+cat("matched:", nrow(pop_2021), "\n")
+setdiff(as.character(assess_codes), pop_2021$lga_code21)   # want: character(0)
+```
+
+In this part, to make future tasks easier, I added the total population as a new column to the **area** dataframe. Then I checked whether there were any missing values in the LGAs we needed. I delayed checking missing values because I needed to narrow down the data this analysis needed first, and then check for missing values rather than checking them as the first task, where we could find missing values that aren't relevant to this analysis.
+
+```{r}
+area <- area %>%
+  mutate(lga_code21 = as.character(lga_code21)) %>%
+  left_join(pop_2021 %>% select(lga_code21, total_pop), by = "lga_code21")
+
+
+sum(is.na(area$total_pop))
+```
+
+```{r}
+head(area)
+```
+
+# Final Validation
+
+As a final validation, I checked whether the dataframes had any untreated null values. I kept the dataframes with known null values separate and ran individual analyses for each.
+
+```{r}
+na_summary <- tibble::tribble(
+  ~table,        ~total_na,
+  "area", sum(is.na(area)),
+  "sector", sum(is.na(sector)),
+  "details", sum(is.na(details)),
+  "adjacents", sum(is.na(adjacents)),
+  "pop_2021", sum(is.na(pop_2021)),
+  "map21n24", sum(is.na(map21n24))
+)
+na_summary
+```
+
+As expected, there are null values in route_number and route_name. In issue 6, we discussed that all route_names from **freq** can be joined to stops without encountering any null values. Therefore, these missing route_names are independent route_names that do not associate with the **freq** dataframe. Therefore, leaving them null here will not pose any linkage issues.
+
+```{r}
+colSums(is.na(stops))
+```
+
+As described above and in issue 6, route_numbers are the only null values in the **freq** dataframe, and all route_names are shown in the **stops** dataframe.
+
+```{r}
+colSums(is.na(freq))
+```
+
+Then, I ran a duplication check on all the dataframes to see whether any duplicated values were lingering deep inside the tables after filtering.
+
+```{r}
+dup_summary <- tibble::tribble(
+  ~table,        ~dup_rows,
+  "area", sum(duplicated(area)),
+  "sector", sum(duplicated(sector)),
+  "details", sum(duplicated(details)),
+  "adjacents", sum(duplicated(adjacents)),
+  "pop_2021", sum(duplicated(pop_2021)),
+  "map21n24", sum(duplicated(map21n24)),
+  "stops", sum(duplicated(stops)),
+  "freq", sum(duplicated(freq))
+)
+dup_summary
+```
+
+There are 4 duplicated rows in the **stops** dataframe, but I inspected them further to verify whether they were actually duplicates. Then proceeded to remove them.
+
+```{r}
+stops %>%
+  group_by(across(everything())) %>%
+  filter(n() > 1) %>%
+  ungroup() %>%
+  arrange(stop_id, route_name)
+```
+
+```{r}
+stops_before <- nrow(stops)
+stops <- stops %>% distinct()
+cat("removed", stops_before - nrow(stops), "duplicate rows\n") 
+
+cat("stops", sum(duplicated(stops)))
+```
+
+Here, I did a simple check on the GeoJSON files to see if there were any null values or duplicates. The results show no duplicates in either file, but there are some null values in stops.geojson in mb_code_2021.
+
+However, mb_code_2021 is not used in any other dataframe. Therefore, these missing values will not introduce any linkage issues. Also, this code is for identification purposes, which allows us to use these geo data without ever touching this column. Therefore, I will keep this row for now.
+
+```{r}
+# stops_geo
+stops_geo_attr <- stops_geo %>% st_drop_geometry()
+
+cat("=== stops_geo ===\n")
+colSums(is.na(stops_geo_attr))
+cat("Duplicates:", sum(duplicated(stops_geo_attr)), "\n")
+
+# lga_geo
+lga_geo_attr <- lga_geo %>% st_drop_geometry()
+
+cat("\n=== lga_geo ===\n")
+colSums(is.na(lga_geo_attr))
+cat("Duplicates:", sum(duplicated(lga_geo_attr)), "\n")
+```
+
+This confirms that this dataset is cleaned and preprocessed for the analysis tasks. Now, we get all this cleaned data into one folder.
+
+```{r}
+dir.create("clean", showWarnings = FALSE)
+
+# CSVs
+write_csv(area, "clean/clean_area.csv")
+write_csv(sector, "clean/clean_sector.csv")
+write_csv(details, "clean/clean_details.csv")
+write_csv(adjacents, "clean/clean_adjacents.csv")
+write_csv(stops, "clean/clean_stops.csv")
+write_csv(pop_2021, "clean/clean_population.csv")
+write_csv(freq, "clean/clean_freq.csv")
+write_csv(map21n24, "clean/clean_map21n24")
+
+#GeoJsons
+st_write(lga_geo,   "clean/clean_lga_area.geojson", delete_dsn = TRUE, quiet = TRUE)
+st_write(stops_geo, "clean/clean_stops.geojson",    delete_dsn = TRUE, quiet = TRUE)
+
+list.files("clean")
+```

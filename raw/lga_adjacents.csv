@@ -1,0 +1,175 @@
+lga_code21,lga_name21,lga_code_adj,lga_name_adj
+20660,Banyule,21110,Boroondara
+20660,Banyule,21890,Darebin
+20660,Banyule,24210,Manningham
+20660,Banyule,25710,Nillumbik
+20660,Banyule,27070,Whittlesea
+20660,Banyule,27350,Yarra
+20910,Bayside (Vic.),22310,Glen Eira
+20910,Bayside (Vic.),23430,Kingston (Vic.)
+20910,Bayside (Vic.),25900,Port Phillip
+21110,Boroondara,20660,Banyule
+21110,Boroondara,24210,Manningham
+21110,Boroondara,24970,Monash
+21110,Boroondara,26350,Stonnington
+21110,Boroondara,26980,Whitehorse
+21110,Boroondara,27350,Yarra
+21180,Brimbank,23110,Hobsons Bay
+21180,Brimbank,23270,Hume
+21180,Brimbank,24330,Maribyrnong
+21180,Brimbank,24650,Melton
+21180,Brimbank,25060,Moonee Valley
+21180,Brimbank,25250,Moreland
+21180,Brimbank,27260,Wyndham
+21450,Cardinia,21610,Casey
+21450,Cardinia,27450,Yarra Ranges
+21610,Casey,21450,Cardinia
+21610,Casey,22170,Frankston
+21610,Casey,22670,Greater Dandenong
+21610,Casey,23670,Knox
+21610,Casey,25340,Mornington Peninsula
+21610,Casey,27450,Yarra Ranges
+21890,Darebin,20660,Banyule
+21890,Darebin,23270,Hume
+21890,Darebin,25250,Moreland
+21890,Darebin,27070,Whittlesea
+21890,Darebin,27350,Yarra
+22170,Frankston,21610,Casey
+22170,Frankston,22670,Greater Dandenong
+22170,Frankston,23430,Kingston (Vic.)
+22170,Frankston,25340,Mornington Peninsula
+22310,Glen Eira,20910,Bayside (Vic.)
+22310,Glen Eira,23430,Kingston (Vic.)
+22310,Glen Eira,24970,Monash
+22310,Glen Eira,25900,Port Phillip
+22310,Glen Eira,26350,Stonnington
+22670,Greater Dandenong,21610,Casey
+22670,Greater Dandenong,22170,Frankston
+22670,Greater Dandenong,23430,Kingston (Vic.)
+22670,Greater Dandenong,23670,Knox
+22670,Greater Dandenong,24970,Monash
+23110,Hobsons Bay,21180,Brimbank
+23110,Hobsons Bay,24330,Maribyrnong
+23110,Hobsons Bay,24600,Melbourne
+23110,Hobsons Bay,27260,Wyndham
+23270,Hume,21180,Brimbank
+23270,Hume,21890,Darebin
+23270,Hume,24130,Macedon Ranges
+23270,Hume,24650,Melton
+23270,Hume,24850,Mitchell
+23270,Hume,25250,Moreland
+23270,Hume,27070,Whittlesea
+23430,Kingston (Vic.),20910,Bayside (Vic.)
+23430,Kingston (Vic.),22170,Frankston
+23430,Kingston (Vic.),22310,Glen Eira
+23430,Kingston (Vic.),22670,Greater Dandenong
+23430,Kingston (Vic.),24970,Monash
+23670,Knox,21610,Casey
+23670,Knox,22670,Greater Dandenong
+23670,Knox,24410,Maroondah
+23670,Knox,24970,Monash
+23670,Knox,26980,Whitehorse
+23670,Knox,27450,Yarra Ranges
+24130,Macedon Ranges,23270,Hume
+24130,Macedon Ranges,24650,Melton
+24130,Macedon Ranges,24850,Mitchell
+24130,Macedon Ranges,25150,Moorabool
+24210,Manningham,20660,Banyule
+24210,Manningham,21110,Boroondara
+24210,Manningham,24410,Maroondah
+24210,Manningham,25710,Nillumbik
+24210,Manningham,26980,Whitehorse
+24210,Manningham,27450,Yarra Ranges
+24330,Maribyrnong,21180,Brimbank
+24330,Maribyrnong,23110,Hobsons Bay
+24330,Maribyrnong,24600,Melbourne
+24330,Maribyrnong,25060,Moonee Valley
+24410,Maroondah,23670,Knox
+24410,Maroondah,24210,Manningham
+24410,Maroondah,26980,Whitehorse
+24410,Maroondah,27450,Yarra Ranges
+24600,Melbourne,23110,Hobsons Bay
+24600,Melbourne,24330,Maribyrnong
+24600,Melbourne,25060,Moonee Valley
+24600,Melbourne,25250,Moreland
+24600,Melbourne,25900,Port Phillip
+24600,Melbourne,26350,Stonnington
+24600,Melbourne,27350,Yarra
+24650,Melton,21180,Brimbank
+24650,Melton,23270,Hume
+24650,Melton,24130,Macedon Ranges
+24650,Melton,25150,Moorabool
+24650,Melton,27260,Wyndham
+24850,Mitchell,23270,Hume
+24850,Mitchell,24130,Macedon Ranges
+24850,Mitchell,25620,Murrindindi
+24850,Mitchell,27070,Whittlesea
+24970,Monash,21110,Boroondara
+24970,Monash,22310,Glen Eira
+24970,Monash,22670,Greater Dandenong
+24970,Monash,23430,Kingston (Vic.)
+24970,Monash,23670,Knox
+24970,Monash,26350,Stonnington
+24970,Monash,26980,Whitehorse
+25060,Moonee Valley,21180,Brimbank
+25060,Moonee Valley,24330,Maribyrnong
+25060,Moonee Valley,24600,Melbourne
+25060,Moonee Valley,25250,Moreland
+25150,Moorabool,24130,Macedon Ranges
+25150,Moorabool,24650,Melton
+25250,Moreland,21180,Brimbank
+25250,Moreland,21890,Darebin
+25250,Moreland,23270,Hume
+25250,Moreland,24600,Melbourne
+25250,Moreland,25060,Moonee Valley
+25250,Moreland,27070,Whittlesea
+25250,Moreland,27350,Yarra
+25340,Mornington Peninsula,21610,Casey
+25340,Mornington Peninsula,22170,Frankston
+25620,Murrindindi,24850,Mitchell
+25620,Murrindindi,25710,Nillumbik
+25620,Murrindindi,27070,Whittlesea
+25620,Murrindindi,27450,Yarra Ranges
+25710,Nillumbik,20660,Banyule
+25710,Nillumbik,24210,Manningham
+25710,Nillumbik,25620,Murrindindi
+25710,Nillumbik,27070,Whittlesea
+25710,Nillumbik,27450,Yarra Ranges
+25900,Port Phillip,20910,Bayside (Vic.)
+25900,Port Phillip,22310,Glen Eira
+25900,Port Phillip,24600,Melbourne
+25900,Port Phillip,26350,Stonnington
+26350,Stonnington,21110,Boroondara
+26350,Stonnington,22310,Glen Eira
+26350,Stonnington,24600,Melbourne
+26350,Stonnington,24970,Monash
+26350,Stonnington,25900,Port Phillip
+26350,Stonnington,27350,Yarra
+26980,Whitehorse,21110,Boroondara
+26980,Whitehorse,23670,Knox
+26980,Whitehorse,24210,Manningham
+26980,Whitehorse,24410,Maroondah
+26980,Whitehorse,24970,Monash
+27070,Whittlesea,20660,Banyule
+27070,Whittlesea,21890,Darebin
+27070,Whittlesea,23270,Hume
+27070,Whittlesea,24850,Mitchell
+27070,Whittlesea,25250,Moreland
+27070,Whittlesea,25620,Murrindindi
+27070,Whittlesea,25710,Nillumbik
+,Wyndham,21180,Brimbank
+,Wyndham,23110,Hobsons Bay
+,Wyndham,24650,Melton
+27350,Yarra,20660,Banyule
+27350,Yarra,21110,Boroondara
+27350,Yarra,21890,Darebin
+27350,Yarra,24600,Melbourne
+27350,Yarra,25250,Moreland
+27350,Yarra,26350,Stonnington
+27450,Yarra Ranges,21450,Cardinia
+27450,Yarra Ranges,21610,Casey
+27450,Yarra Ranges,23670,Knox
+27450,Yarra Ranges,24210,Manningham
+27450,Yarra Ranges,24410,Maroondah
+27450,Yarra Ranges,25620,Murrindindi
+27450,Yarra Ranges,25710,Nillumbik

@@ -1,0 +1,243 @@
+Dataset Metadata
+
+This assessment uses several datasets related to public transport service availability, Local Government Areas (LGAs), metropolitan sectors, and population characteristics. 
+Some datasets are provided as part of the assessment package. Other data, such as population by age, must be obtained directly from authorised sources such as the Australian Bureau of Statistics (ABS).
+
+The main analysis unit is the Local Government Area (LGA). Most provided files use ASGS 2021 LGA codes, while the population data obtained from ABS may use ASGS 2024 LGA codes. Students must not assume that LGA codes from different years can be joined directly. A mapping table is provided to support alignment between LGA 2021 and LGA 2024.
+
+1. LGA_2021_LGA_2024.csv
+
+This file provides a mapping between ASGS 2021 LGA codes and ASGS 2024 LGA codes. It is required because the population data and public transport data may use different LGA versions.
+
+Column	Description
+LGA_CODE_2021	LGA code based on ASGS 2021
+LGA_NAME_2021	LGA name based on ASGS 2021
+LGA_CODE_2024	LGA code based on ASGS 2024
+LGA_NAME_2024	LGA name based on ASGS 2024
+
+Important notes:
+
+* This file should be used to align ABS population data with the provided PTV/LGA data.
+* Students should avoid joining by LGA name only, because names can change.
+* Students should check for unmatched records after joining.
+
+2. lga_area.csv
+
+This file contains the selected LGA list used in the assessment, along with area size and approximate distance to Melbourne CBD.
+
+Column	Description
+lga_code21	LGA code based on ASGS 2021
+lga_name21	LGA name based on ASGS 2021
+sqkm	Area of the LGA in square kilometres
+cbd_euclidean_km	Approximate straight-line distance from the LGA centroid to Melbourne CBD, in kilometres
+
+Important notes:
+
+* cbd_euclidean_km is a Euclidean distance, not a travel distance.
+* It does not represent driving distance, public transport distance, or travel time.
+* This variable should be used only as broad location context.
+* The file includes Unincorporated Vic, which is a valid geographic record but may not be meaningful for normal LGA comparison. Students should decide whether to keep it, remove it, or treat it separately, and justify their decision.
+
+3. lga_area.geojson
+
+This file contains LGA boundary geometry for mapping and spatial visualisation.
+
+Attribute	Description
+lga_code21	LGA code based on ASGS 2021
+lga_name21	LGA name based on ASGS 2021
+sqkm	Area of the LGA in square kilometres
+cbd_euclidean_km	Approximate straight-line distance from the LGA centroid to Melbourne CBD
+geometry	Polygon geometry representing the LGA boundary
+
+Important notes:
+
+* This file is mainly relevant for spatial visualisation.
+* The geometry can be used for choropleth maps or LGA-based interactive maps.
+* For non-spatial analysis, students may use lga_area.csv instead.
+
+4. lga_details.csv
+
+This file contains contextual facility counts for selected LGAs.
+
+Column	Description
+lga_code21	LGA code based on ASGS 2021
+lga_name21	LGA name based on ASGS 2021
+education	Count of education-related facilities or locations
+higher_education	Count of higher education-related facilities or locations
+health	Count of health-related facilities or locations
+public	Count of selected public facilities or locations
+
+Important notes:
+
+* These variables provide supporting context only.
+* They do not directly measure public transport access.
+* Students may use these variables to support interpretation, but they should avoid overstating causal claims.
+* Unincorporated Vic is not included in this file, so students should be aware of possible missing values after joining.
+
+5. lga_adjacents.csv
+
+This file identifies neighbouring LGAs.
+
+Column	Description
+lga_code21	LGA code based on ASGS 2021
+lga_name21	LGA name based on ASGS 2021
+lga_code_adj	Code of neighbouring LGA
+lga_name_adj	Name of neighbouring LGA
+
+Important notes:
+
+* This file can be used to discuss neighbouring context.
+* A neighbouring LGA may influence how people experience public transport access, especially near LGA boundaries.
+* This file should not be used to claim actual travel behaviour unless further evidence is provided.
+* Not all special geographic records may have adjacency information.
+
+6. lga_sector.csv
+
+This file describes how each LGA overlaps with broad metropolitan sectors.
+
+Column	Description
+lga_code21	LGA code based on ASGS 2021
+lga_name21	LGA name based on ASGS 2021
+sector	Broad metropolitan sector
+lga_sqkm	Total LGA area in square kilometres
+lga_part_sqkm_pct	Proportion of the LGA area that falls within the sector
+
+Important notes:
+
+* Some LGAs are fully located within one sector.
+* Some LGAs overlap more than one sector.
+* For example, an LGA may be partly classified as Inner Melbourne and partly as Middle Melbourne.
+* This file provides location context, not public transport service distribution.
+* Students must not split LGA-level stop counts, route counts, frequency values, or population values using sector proportions unless they clearly justify the assumptions and limitations.
+* For example, estimating Inner stops = total LGA stops × sector proportion is not valid because it assumes public transport services are evenly distributed across the LGA.
+
+Recommended use:
+
+* Use sector information as supporting context.
+* Use a dominant sector or sector mix classification if appropriate.
+* Discuss the limitation of assigning large LGAs to broad sectors.
+
+7. lga_stops_routes.csv
+
+This file contains public transport stop and route records by LGA.
+
+Column	Description
+lga_code21	LGA code based on ASGS 2021
+lga_name21	LGA name based on ASGS 2021
+stop_id	Public transport stop identifier
+stop_name	Name of the stop
+vehicle	Transport mode, such as Bus, Train, or Tram
+route_number	Route number, where available
+route_name	Route name or route description
+
+Important notes:
+
+* Each row should be treated as a stop-route record, not necessarily as one unique physical stop.
+* A single physical stop may appear more than once if it is served by multiple routes.
+* Students should distinguish between:
+    * number of records,
+    * number of unique stops,
+    * number of unique routes,
+    * number of vehicle types.
+* Some route numbers may be missing. This does not always mean the route is invalid.
+* Students should check for duplicates and explain how they handle them.
+* This file includes records across Victoria, so students may need to filter to the relevant LGAs used in the assessment.
+
+Possible derived indicators:
+
+Indicator	Suggested calculation
+Unique stops	Count distinct stop_id
+Unique routes	Count distinct route identifier
+Vehicle types	Count distinct vehicle
+Stop-route records	Count rows after appropriate filtering
+Stops per 1,000 residents	Unique stops divided by population, multiplied by 1,000
+
+8. routes_city_freq.csv
+
+This file contains route-level service frequency information.
+
+Column	Description
+vehicle	Transport mode
+route_number	Route number, where available
+route_name	Route name or route description
+daily_freq	Estimated daily service frequency
+weekday_freq	Estimated weekday service frequency
+weekend_freq	Estimated weekend service frequency
+
+Important notes:
+
+* This file should be joined carefully with lga_stops_routes.csv.
+* route_name alone may not always be a safe join key.
+* A combined route key using vehicle, route_number, and route_name may be more reliable, but missing route numbers must be handled carefully.
+* Some routes in the stop-route file may not have matching frequency values.
+* Missing frequency values should not automatically be treated as zero.
+* Students should document how unmatched route frequencies are handled.
+
+Possible derived indicators:
+
+Indicator	Suggested interpretation
+Total daily frequency	Broad indicator of service intensity
+Total weekday frequency	Broad indicator of weekday service availability
+Total weekend frequency	Broad indicator of weekend service availability
+Frequency per 1,000 residents	Normalised service intensity indicator
+
+9. stops.geojson
+
+This file contains raw public transport stop locations.
+
+Attribute	Description
+ogc_fid	Internal feature identifier
+stop_id	Public transport stop identifier
+stop_name	Name of the stop
+stop_lat	Stop latitude
+stop_lon	Stop longitude
+mb_code_2021	Mesh Block code based on ASGS 2021
+geometry	Point geometry representing the stop location
+
+Important notes:
+
+* This file is useful for spatial visualisation and advanced spatial processing.
+* It contains raw stop point locations.
+* Students can use this file to map stop locations.
+* If sector boundary data is provided, advanced students may spatially assign stops to sectors using point-in-polygon methods.
+* Students should not confuse raw stop locations with summarised LGA-level service indicators.
+
+Key Data Issues Students Should Consider
+
+1. Different LGA versions
+The population data may use 2024 LGA codes, while the provided transport and boundary files use 2021 LGA codes. LGA code and name may change due to many reason. These changes are recorded in ABS.
+
+2. National population scope
+The population dataset covers all Australian LGAs. Students must filter to the relevant state and relevant LGAs before analysis.
+
+3. LGA aggregation limitation
+LGAs are large geographic areas. A result at LGA level may hide differences between suburbs or neighbourhoods inside the LGA. Students should avoid claiming that an LGA-level value represents the experience of every resident.
+
+4. Sector proportion limitation
+Sector proportions describe area overlap, not service distribution. Students should not split LGA-level service values by sector proportion unless they clearly state the assumption and limitation.
+
+5. Stop records versus unique stops
+The stop-route file contains repeated stop records because one stop may serve multiple routes. Students must choose the correct counting method for their question.
+
+6. Route frequency matching
+Route frequency should be joined carefully. Missing route frequency values should be checked and explained rather than silently treated as zero.
+
+8. Euclidean distance limitation
+cbd_euclidean_km is a straight-line distance to Melbourne CBD. It does not represent actual travel distance or public transport travel time.
+
+Recommended Data Preparation Checks
+Students are encouraged to report the following checks:
+
+Check	Purpose
+Number of rows in each file	Confirms dataset scope
+Number of unique LGAs	Confirms analysis unit
+Missing values by column	Identifies incomplete data
+Duplicate rows	Detects possible repeated records
+Unmatched LGAs after joining	Checks join quality
+Unmatched route frequency records	Checks route-frequency integration
+Population total before and after filtering	Confirms correct filtering
+Treatment of Unincorporated Vic	Demonstrates critical preprocessing
+Difference between raw and normalised indicators	Supports fairer interpretation
+
+General Interpretation Warning
+This dataset supports broad comparison of public transport service availability across LGAs in Greater Melbourne. It does not directly measure individual accessibility, walking distance to stops, travel time, service reliability, crowding, affordability, or actual resident behaviour. Any conclusion should be presented as an area-level service indicator, not as a complete measure of public transport accessibility.
